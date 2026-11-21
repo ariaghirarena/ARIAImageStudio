@@ -1,6 +1,35 @@
 use crate::error::{AppError, AppResult};
-use rusqlite::{params_from_iter, Connection};
+use rusqlite::types::{ToSqlOutput, Value as SqlValue};
+use rusqlite::{params_from_iter, Connection, ToSql};
 use serde_json::{Map, Value};
+
+/// Bridges `serde_json::Value` (used by the command layer) to rusqlite parameters.
+pub struct JsonParam(pub Value);
+
+impl ToSql for JsonParam {
+    fn to_sql(&self) -> rusqlite::Result<ToSqlOutput<'_>> {
+        let owned = match &self.0 {
+            Value::Null => SqlValue::Null,
+            Value::Bool(flag) => SqlValue::Integer(if *flag { 1 } else { 0 }),
+            Value::Number(number) => {
+                if let Some(int) = number.as_i64() {
+                    SqlValue::Integer(int)
+                } else if let Some(float) = number.as_f64() {
+                    SqlValue::Real(float)
+                } else {
+                    SqlValue::Null
+                }
+            }
+            Value::String(text) => SqlValue::Text(text.clone()),
+            other => SqlValue::Text(other.to_string()),
+        };
+        Ok(ToSqlOutput::Owned(owned))
+    }
+}
+
+fn bindable(params: &[Value]) -> impl Iterator<Item = JsonParam> + '_ {
+    params.iter().cloned().map(JsonParam)
+}
 
 pub fn open(path: &std::path::Path) -> AppResult<Connection> {
     if let Some(parent) = path.parent() {
@@ -128,7 +157,7 @@ pub fn query_json(
     cols: &[&str],
 ) -> AppResult<Vec<Value>> {
     let mut stmt = conn.prepare(sql)?;
-    let rows = stmt.query_map(params_from_iter(params.iter()), |row| {
+    let rows = stmt.query_map(params_from_iter(bindable(params)), |row| {
         Ok(row_to_json(row, cols))
     })?;
     let mut out = Vec::new();
@@ -148,13 +177,13 @@ pub fn query_one(
 }
 
 pub fn execute(conn: &Connection, sql: &str, params: &[Value]) -> AppResult<usize> {
-    let n = conn.execute(sql, params_from_iter(params.iter()))?;
+    let n = conn.execute(sql, params_from_iter(bindable(params)))?;
     Ok(n)
 }
 
 pub fn count(conn: &Connection, sql: &str, params: &[Value]) -> AppResult<i64> {
     let mut stmt = conn.prepare(sql)?;
-    let value: i64 = stmt.query_row(params_from_iter(params.iter()), |row| row.get(0))?;
+    let value: i64 = stmt.query_row(params_from_iter(bindable(params)), |row| row.get(0))?;
     Ok(value)
 }
 

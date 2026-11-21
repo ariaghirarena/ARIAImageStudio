@@ -570,7 +570,7 @@ pub fn validate_auth_json(path: &Path) -> AppResult<String> {
     let has_tokens = obj.get("tokens").map(|v| !v.is_null()).unwrap_or(false);
     let has_api_key = obj
         .get("OPENAI_API_KEY")
-        .map(|v| v.is_some() && !v.is_null())
+        .map(|v| !v.is_null())
         .unwrap_or(false);
     let has_agent_identity = obj.get("agent_identity").map(|v| !v.is_null()).unwrap_or(false);
     if has_tokens {
