@@ -58,8 +58,11 @@ jobs:
           workspaces: apps/desktop/src-tauri -> target
 
       - name: Cargo check
+        shell: bash
         working-directory: apps/desktop/src-tauri
-        run: cargo check --locked || cargo check
+        run: |
+          set -o pipefail
+          cargo check --message-format=short 2>&1 | tee cargo-check.log | python ../../scripts/annotate-cargo.py
 
       - name: Build Tauri bundle (NSIS)
         run: npm run tauri build -- --bundles nsis
