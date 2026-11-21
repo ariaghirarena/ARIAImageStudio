@@ -13,14 +13,14 @@ This file is the honest engineering ledger. It distinguishes **written**, **type
 | `packages/prompt-engine` | ✅ | ✅ | ✅ | ✅ pure functions |
 | `packages/feature-registry` | ✅ (300 rows) | ✅ | ✅ | ✅ integrity checks |
 | `apps/desktop` 20 pages | ✅ | ✅ | ✅ | ⏳ needs desktop runtime |
-| `apps/desktop/src-tauri` (Rust, ~70 commands) | ✅ | ⏳ first `cargo check` runs in CI | ⏳ | ⏳ |
-| Windows installer (NSIS) | ⏳ workflow prepared | — | — | ⏳ |
-| Portable x64 EXE | ⏳ workflow prepared | — | — | ⏳ |
+| `apps/desktop/src-tauri` (Rust, ~70 commands) | ✅ | ✅ `cargo check` green on CI | ✅ release profile | ⏳ needs signed-in account |
+| Windows installer (NSIS) | ✅ | — | ✅ built on `windows-latest` | ⏳ install test pending |
+| Portable x64 EXE | ✅ | — | ✅ built on `windows-latest` | ⏳ smoke test pending |
 
-`npm run typecheck` and `npm run build` pass locally (Vite, 114 modules, no type errors). The Rust crate has **never been
-compiled** in this environment because no Rust toolchain is available here; the first compilation happens on
-GitHub Actions `windows-latest`. Expect a small number of compiler fixes on that first run — that is exactly why the
-workflow exists, and why the installer claim is marked ⏳ rather than ✅.
+`npm run typecheck` and `npm run build` pass locally (Vite, 114 modules, no type errors). The Rust crate compiles and
+bundles on GitHub Actions `windows-latest`: `cargo check` is green, `tauri build --bundles nsis` produces the installer,
+and the portable executable is copied next to it (run `44897534932`, branch `arena/7388aaac-ariaimagestudio`). What is
+still pending is a signed-in manual pass on a real Windows machine — that is the only reason the runtime column is ⏳.
 
 ## 2. What ships in v1.0.0
 
@@ -59,7 +59,8 @@ Registry integrity: 300/300 rows, 0 duplicate ids. Full detail in [FEATURES-300.
 
 ## 5. Known risks before public release
 
-1. **First Rust compile** — type/ownership errors are likely; tracked as the immediate blocker.
+1. **Signed-in runtime pass** — generation, editing and queue behaviour depend on a real Codex account and cannot be
+   exercised in CI. This is the remaining gate before calling the flows "Tested".
 2. **Codex CLI variance** — flags are pinned to current `codex exec` (`--json`, `-C`, `-s`, `-i`, `-m`); a future CLI
    change could require `codex.rs` updates. Diagnostics surfaces version drift.
 3. **Account-dependent output** — image generation requires a signed-in account with image access; ARIA cannot test
