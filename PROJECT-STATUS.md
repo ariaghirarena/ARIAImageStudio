@@ -95,3 +95,11 @@ Release: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.0
 - `SHA256SUMS.txt` — 203 bytes
 
 Tag pipeline: https://github.com/ariaghirarena/ARIAImageStudio/actions/runs/44904005306 (success). No signed-in generation or installed tab-by-tab visual test was performed.
+
+## v1.1.1 — import personal images
+
+- Added local image picker to Gallery, Edit and Create. In Create, imported images become references; in Edit they become the selected source immediately.
+- Import copies into the managed Gallery/Imported folder, decodes before indexing, generates a thumbnail, and records dimensions/hash/origin. Original files are not indexed directly and are never removed by Gallery deletion.
+- Accepts supported raster formats, maximum 100 MiB, validates project IDs and cleans managed copies after validation/DB failures.
+- Rust regression test covers real image import, unique copies, thumbnails, invalid project, corrupt-image cleanup and source preservation after deleting the imported record. Pending Windows CI at time of writing.
+- Frontend typecheck, production build and 36 JS tests passed locally. Installed Windows interactive picker and authenticated image editing remain unverified.

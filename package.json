@@ -1,7 +1,7 @@
 {
   "name": "aria-image-studio",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "ARIA Image Studio — AI image creation, editing and management desktop app powered by Codex built-in image generation",
   "license": "SEE LICENSE IN LICENSES/",
   "workspaces": [

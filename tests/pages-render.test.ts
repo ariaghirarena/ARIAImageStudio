@@ -24,6 +24,9 @@ describe("page render smoke tests without account or desktop IPC", () => {
       try {
         const markup = renderToStaticMarkup(React.createElement(QueryClientProvider, { client }, React.createElement(module[exported])));
         expect(markup).toMatch(/[\u0600-\u06ff]/);
+        if (["Gallery", "EditImage", "CreateImage"].includes(file)) {
+          expect(markup).toContain("افزودن عکس از کامپیوتر");
+        }
         if (file === "CreateImage") {
           expect(markup).toContain("چه تصویری می‌خواهید بسازید؟");
           expect(markup).toContain("prompt-settings\" hidden");

@@ -1,6 +1,6 @@
 [package]
 name = "aria-image-studio"
-version = "1.1.0"
+version = "1.1.1"
 description = "ARIA Image Studio — Codex-powered AI image creation studio"
 authors = ["ARIA"]
 edition = "2021"

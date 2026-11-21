@@ -1,3 +1,4 @@
+import { ImportImageButton } from "../components/ImportImage";
 import { faLabel } from "@aria/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -222,6 +223,7 @@ export function CreatePage() {
         description="توضیح تصویر را فارسی یا انگلیسی بنویسید؛ موتور پرامپت آن را مرتب می‌کند و ابزار داخلی Codex تصویر را می‌سازد."
         actions={
           <>
+            <ImportImageButton projectId={projectId} onImported={(image) => { setSelectedRefs((current) => [...current, image.path]); toast("عکس انتخاب‌شده به‌عنوان مرجع تصویر بعدی استفاده می‌شود", "info"); }} />
             <Button icon="library" loading={savePrompt.isPending} onClick={() => savePrompt.mutate([])}>ذخیره پرامپت</Button>
             <Button icon="grid" onClick={() => enqueue.mutate([])} loading={enqueue.isPending}>افزودن به صف</Button>
             <Button variant="primary" icon="sparkles" loading={running} onClick={() => void generate()}>ساخت تصویر</Button>
@@ -291,6 +293,7 @@ export function CreatePage() {
                 </button>
               </div>
             </div>
+            {selectedRefs.length > 0 ? <div className="composer-hint">{selectedRefs.length} عکس مرجع برای تصویر بعدی انتخاب شده است <Button size="sm" variant="ghost" onClick={() => setSelectedRefs([])}>حذف مرجع‌ها</Button></div> : null}
             <div className="composer-hint">Ctrl+Enter برای ساخت · Ctrl+S برای ذخیره پرامپت</div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { ImportImageButton } from "../components/ImportImage";
 import { useEffect, useState } from "react";
 import { Badge, Button, Card, EmptyState, Icon, Input, Lightbox, Modal, Select, Spinner, Textarea, Toggle, useDebounced } from "@aria/ui";
 import { api, errorText, formatBytes, formatDate, toFileUrl, type ImageRecord } from "@aria/core";
@@ -65,6 +66,7 @@ export function GalleryPage() {
         description={`${total} تصویر ثبت شده است · تصویرهای کوچک و کد تأیید فایل‌ها روی همین کامپیوتر ساخته می‌شود.`}
         actions={
           <>
+            <ImportImageButton projectId={projectId || undefined} onImported={(image) => { setSearch(""); setFormat(""); setFavoritesOnly(false); setLightbox(image); }} />
             <Button icon="layers" onClick={() => setDupesOpen(true)}>یافتن تکراری‌ها</Button>
             <Button icon="refresh" onClick={() => gallery.refetch()}>تازه‌سازی</Button>
             <Button variant="primary" icon="sparkles" onClick={() => setRoute("create")}>تصویر جدید</Button>

@@ -383,6 +383,7 @@ export const api = {
   galleryList: (query: GalleryQuery) =>
     call<{ items: ImageRecord[]; total: number; limit: number; offset: number }>("gallery_list", { query }),
   imageDetail: (id: string) => call<ImageRecord>("image_detail", { id }),
+  imageImport: (sourcePath: string, projectId: string) => call<ImageRecord>("image_import", { sourcePath, projectId }),
   imageFavorite: (id: string, favorite: boolean) => call<void>("image_favorite", { id, favorite }),
   imageTags: (id: string, tags: string[]) => call<void>("image_tags", { id, tags }),
   imageNote: (id: string, note: string) => call<void>("image_note", { id, note }),

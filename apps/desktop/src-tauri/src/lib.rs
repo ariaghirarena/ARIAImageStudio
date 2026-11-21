@@ -650,6 +650,16 @@ fn gallery_list(state: State<'_, AppState>, query: Value) -> AppResult<Value> {
 }
 
 #[tauri::command]
+async fn image_import(state: State<'_, AppState>, source_path: String, project_id: String) -> AppResult<Value> {
+    let paths = state.paths.clone();
+    let database = state.db.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        let conn = database.lock().map_err(|_| AppError::new("db_locked", "پایگاه داده مشغول است"))?;
+        library::import_image(&conn, &paths, &source_path, &project_id)
+    }).await.map_err(|e| AppError::new("join_error", e.to_string()))?
+}
+
+#[tauri::command]
 fn image_detail(state: State<'_, AppState>, id: String) -> AppResult<Value> {
     let conn = state.conn()?;
     db::query_one(
@@ -1266,6 +1276,7 @@ pub fn run() {
             queue_state,
             generations_list,
             gallery_list,
+            image_import,
             image_detail,
             image_favorite,
             image_tags,

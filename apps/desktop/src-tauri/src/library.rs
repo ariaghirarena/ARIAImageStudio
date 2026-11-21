@@ -533,3 +533,80 @@ pub fn bulk_rename(conn: &Connection, ids: &[String], pattern: &str) -> AppResul
     }
     Ok(json!({ "renamed": renamed }))
 }
+
+/// Import an owned copy. The user's source is never indexed directly or modified.
+pub fn import_image(conn: &Connection, paths: &AppPaths, source: &str, project_id: &str) -> AppResult<Value> {
+    let src = Path::new(source);
+    if !src.is_file() || !imageops::is_image_file(src) {
+        return Err(AppError::new("invalid_argument", "یک فایل تصویری معتبر انتخاب کنید"));
+    }
+    if std::fs::metadata(src)?.len() > 100 * 1024 * 1024 {
+        return Err(AppError::new("invalid_argument", "حداکثر حجم تصویر ۱۰۰ مگابایت است"));
+    }
+    // Validate project before copying any files.
+    if !project_id.is_empty() && db::query_one(conn, "SELECT id FROM projects WHERE id=?1", &[json!(project_id)], &["id"])?.is_none() {
+        return Err(AppError::new("project_not_found", "پروژه پیدا نشد"));
+    }
+    let id = uuid::Uuid::new_v4().to_string();
+    let dir = paths.gallery.join("Imported");
+    std::fs::create_dir_all(&dir)?;
+    let ext = src.extension().unwrap_or_default().to_string_lossy().to_lowercase();
+    let target = dir.join(format!("{id}.{ext}"));
+    std::fs::copy(src, &target)?;
+    let thumbs = paths.gallery.join(".thumbs");
+    let thumb = thumbs.join(format!("{id}.webp"));
+    let result = (|| -> AppResult<Value> {
+        // Decode the owned copy, rejecting corrupt files before indexing.
+        let info = imageops::inspect(&target)?;
+        std::fs::create_dir_all(&thumbs)?;
+        imageops::make_thumbnail(&target, &thumb, 360, 82)?;
+        let name = src.file_name().unwrap_or_default().to_string_lossy().to_string();
+        db::execute(conn,
+            "INSERT INTO images (id,project_id,path,thumb_path,file_name,format,width,height,size_bytes,sha256,created_at,engine) VALUES (?1,?2,?3,?4,?5,?6,?7,?8,?9,?10,?11,'local-import')",
+            &[json!(id),json!(project_id),json!(info.path),json!(thumb.to_string_lossy()),json!(name),json!(info.format),json!(info.width),json!(info.height),json!(info.size_bytes),json!(info.sha256),json!(db::now())])?;
+        db::query_one(conn, "SELECT * FROM images WHERE id=?1", &[json!(id)],
+            &["id","generation_id","project_id","path","thumb_path","file_name","format","width","height","size_bytes","sha256","created_at","favorite","tags_json","note","prompt","optimized_prompt","engine","model_note","references_json","edit_history_json","parent_image_id"])?
+            .ok_or_else(|| AppError::new("image_not_found", "تصویر ثبت نشد"))
+    })();
+    if result.is_err() {
+        let _ = std::fs::remove_file(&target);
+        let _ = std::fs::remove_file(&thumb);
+    }
+    result
+}
+
+#[cfg(test)]
+mod import_tests {
+    use super::*;
+
+    #[test]
+    fn imports_owned_copy_and_rejects_corrupt_files_without_orphans() {
+        let root = std::env::temp_dir().join(format!("aria-import-test-{}", uuid::Uuid::new_v4()));
+        let paths = AppPaths::from_root(root.join("app"));
+        paths.ensure().unwrap();
+        let conn = db::open(&paths.db).unwrap();
+        let source = root.join("personal.png");
+        image::RgbaImage::from_pixel(12, 8, image::Rgba([10, 20, 30, 255])).save(&source).unwrap();
+        let original = std::fs::read(&source).unwrap();
+        let record = import_image(&conn, &paths, source.to_str().unwrap(), "").unwrap();
+        let imported = PathBuf::from(record["path"].as_str().unwrap());
+        assert_ne!(source, imported);
+        assert_eq!(record["width"].as_i64(), Some(12));
+        assert_eq!(std::fs::read(&imported).unwrap(), original);
+        assert!(Path::new(record["thumb_path"].as_str().unwrap()).is_file());
+        assert_eq!(record["engine"].as_str(), Some("local-import"));
+        let second = import_image(&conn, &paths, source.to_str().unwrap(), "").unwrap();
+        assert_ne!(record["path"], second["path"]);
+        assert!(import_image(&conn, &paths, source.to_str().unwrap(), "nonexistent-project").is_err());
+        let corrupt = root.join("corrupt.png");
+        std::fs::write(&corrupt, b"not an image").unwrap();
+        assert!(import_image(&conn, &paths, corrupt.to_str().unwrap(), "").is_err());
+        assert_eq!(std::fs::read_dir(paths.gallery.join("Imported")).unwrap().count(), 2);
+        assert_eq!(db::count(&conn, "SELECT COUNT(*) FROM images", &[]).unwrap(), 2);
+        delete_image(&conn, record["id"].as_str().unwrap(), true).unwrap();
+        assert!(!imported.exists());
+        assert_eq!(std::fs::read(&source).unwrap(), original);
+        drop(conn);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}

@@ -1,3 +1,4 @@
+import { ImportImageButton } from "../components/ImportImage";
 import { useEffect, useMemo, useState } from "react";
 import { Badge, Button, Card, CompareSlider, Icon, Lightbox, Modal, Select, Slider, Spinner, Textarea, Toggle } from "@aria/ui";
 import { api, errorText, formatDuration, toFileUrl, type ImageRecord } from "@aria/core";
@@ -135,6 +136,7 @@ export function EditPage() {
         description="دو راه واقعی: ویرایش با موتور (با پرامپت، بدون تغییر هویت تصویر) یا تنظیمات محلی که تصویر اصلی را تغییر نمی‌دهد."
         actions={
           <>
+            <ImportImageButton onImported={(image) => { setSource(image); setResult(null); setHandoff({}); }} />
             <Button icon="image" onClick={() => setSelectOpen(true)}>انتخاب تصویر</Button>
             <Button variant="primary" icon="wand" loading={running} disabled={!source} onClick={() => void generateEdit()}>ساخت ویرایش</Button>
           </>
@@ -229,6 +231,7 @@ export function EditPage() {
 
       <Modal open={selectOpen} title="انتخاب تصویر اصلی" subtitle="فقط تصاویری که در ARIA ثبت شده‌اند" onClose={() => setSelectOpen(false)} wide>
         {gallery.data && gallery.data.items.length === 0 ? <div className="muted small">گالری خالی است.</div> : null}
+        <ImportImageButton onImported={(image) => { setSource(image); setResult(null); setSelectOpen(false); setHandoff({}); }} />
         <div className="gallery-grid" style={{ maxHeight: "56vh", overflow: "auto" }}>
           {gallery.data?.items.map((image) => (
             <ImageThumb
