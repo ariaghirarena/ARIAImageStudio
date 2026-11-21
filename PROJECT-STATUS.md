@@ -81,7 +81,17 @@ Registry integrity: 300/300 rows, 0 duplicate ids. Full detail in [FEATURES-300.
 - Legacy preferences migrate to Persian/RTL/light without deleting user data.
 - Central Windows child-process policy applies `CREATE_NO_WINDOW`; includes a Windows-only real-child console-handle regression test.
 - Local: TypeScript check, Vite production bundle and 36 Vitest assertions pass (including server-render smoke checks for all 20 pages).
-- Redesign base commit `0aa6370`: Windows `cargo check`, real-child console-handle test, NSIS installer and portable bundle all passed in CI run `44903480327`. Final release revision will be rebuilt by its tag workflow.
+- Redesign base commit `0aa6370`: Windows `cargo check`, real-child console-handle test, NSIS installer and portable bundle all passed in CI run `44903480327`. Final tag `v1.1.0` at `5461ca8` also passed the full Windows pipeline in run `44904005306`, including all 36 JS tests, the real-child console test, packaging and publication.
 - Installed Windows tab-by-tab visual check and authenticated generation/edit remain unverified; no claim of end-to-end runtime verification.
 - Technical logs, model IDs, paths and engine prompt contents retain their original language.
 - See `docs/RELEASE-1.1.0.fa.md` for user instructions and font provenance/licensing caveat.
+
+### Published v1.1.0 assets
+
+Release: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.0
+
+- `ARIA-Image-Studio-1.1.0-setup.exe` — 2,506,103 bytes
+- `ARIA-Image-Studio-1.1.0-portable.exe` — 6,004,224 bytes
+- `SHA256SUMS.txt` — 203 bytes
+
+Tag pipeline: https://github.com/ariaghirarena/ARIAImageStudio/actions/runs/44904005306 (success). No signed-in generation or installed tab-by-tab visual test was performed.
