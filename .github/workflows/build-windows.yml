@@ -119,16 +119,22 @@ jobs:
           name: ARIA Image Studio ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            ## ARIA Image Studio ${{ github.ref_name }} — Windows x64
+            ## ARIA Image Studio ${{ github.ref_name }} — ویندوز ۶۴ بیتی
 
-            **Install:** run `ARIA-Image-Studio-1.1.0-setup.exe` (per-user, no admin prompt).
-            **Portable:** run `ARIA-Image-Studio-1.1.0-portable.exe` from any folder.
+            رابط فارسی و راست‌به‌چپ، پوسته روشن، فونت پیدا و صفحه ساخت تصویر گفت‌وگویی.
+            فرایندهای فرزند با CREATE_NO_WINDOW اجرا می‌شوند؛ آزمون خودکار ویندوز، نداشتن پنجره کنسول را بررسی می‌کند.
 
-            Requirements: Windows 10/11 x64 with WebView2 (preinstalled on Windows 11) and the
-            official Codex CLI (`npm install -g @openai/codex`) signed in with your own account.
-            No OpenAI API key is used or accepted.
+            **نصب:** فایل `ARIA-Image-Studio-1.1.0-setup.exe` را اجرا کنید.
+            **بدون نصب:** از فایل `ARIA-Image-Studio-1.1.0-portable.exe` استفاده کنید.
+            حساب‌ها و پروژه‌های قبلی حفظ می‌شوند؛ ظاهر نصب قبلی به روشن و فارسی تغییر می‌کند.
 
-            The installer is unsigned in this release, so SmartScreen may ask for confirmation
-            (More info → Run anyway). Verify the download against `SHA256SUMS.txt`.
+            پیش‌نیاز: ویندوز ۱۰ یا ۱۱ نسخه x64، محیط WebView2 و ابزار رسمی Codex.
+            نصب Codex: `npm install -g @openai/codex`؛ سپس در برنامه به حساب خود وارد شوید.
+            نیازی به کلید API نیست. دسترسی تصویرسازی به امکانات حساب شما بستگی دارد.
+
+            نصب‌کننده امضای دیجیتال ندارد و ممکن است SmartScreen هشدار بدهد.
+            برای بررسی صحت فایل، از `SHA256SUMS.txt` استفاده کنید.
+            ساخت و ویرایش با حساب واقعی و بررسی چشمی همه تب‌ها پس از نصب هنوز تأیید نشده‌اند.
+            راهنمای کامل و منبع قلم در `docs/RELEASE-1.1.0.fa.md` است.
           files: artifacts/*
           fail_on_unmatched_files: true

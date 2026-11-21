@@ -1,6 +1,6 @@
 # PROJECT-STATUS — ARIA Image Studio
 
-_Last updated: 2026-11-21 · version 1.0.0_
+_Last updated: 2026-11-21 · version 1.1.0_
 
 This file is the honest engineering ledger. It distinguishes **written**, **type-checked**, **built** and **tested**.
 
@@ -81,7 +81,7 @@ Registry integrity: 300/300 rows, 0 duplicate ids. Full detail in [FEATURES-300.
 - Legacy preferences migrate to Persian/RTL/light without deleting user data.
 - Central Windows child-process policy applies `CREATE_NO_WINDOW`; includes a Windows-only real-child console-handle regression test.
 - Local: TypeScript check, Vite production bundle and 36 Vitest assertions pass (including server-render smoke checks for all 20 pages).
-- Windows installer build and console-handle test: pending CI for this revision.
+- Redesign base commit `0aa6370`: Windows `cargo check`, real-child console-handle test, NSIS installer and portable bundle all passed in CI run `44903480327`. Final release revision will be rebuilt by its tag workflow.
 - Installed Windows tab-by-tab visual check and authenticated generation/edit remain unverified; no claim of end-to-end runtime verification.
 - Technical logs, model IDs, paths and engine prompt contents retain their original language.
 - See `docs/RELEASE-1.1.0.fa.md` for user instructions and font provenance/licensing caveat.

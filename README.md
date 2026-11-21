@@ -1,5 +1,13 @@
 # ARIA Image Studio
 
+## نسخه ۱.۱.۰ — رابط فارسی و روشن
+
+رابط راست‌به‌چپ با قلم **پیدا**، صفحه ساخت تصویر گفت‌وگویی و اجرای فرایندهای ویندوز بدون پنجره کنسول.
+[دانلود نسخه‌ها](https://github.com/ariaghirarena/ARIAImageStudio/releases) · [راهنمای فارسی نسخه جدید](docs/RELEASE-1.1.0.fa.md)
+
+نام نصب‌کننده جدید: `ARIA-Image-Studio-1.1.0-setup.exe`. اطلاعات حساب و پروژه‌های قبلی با نصب نسخه جدید حذف نمی‌شوند.
+
+
 **A Windows image studio built on your own Codex account.** ARIA generates, edits, enhances and manages images through the
 official Codex CLI and its built-in `image_gen` tool — no `OPENAI_API_KEY`, no unofficial endpoints, no mock engine.
 
@@ -15,7 +23,7 @@ official Codex CLI and its built-in `image_gen` tool — no `OPENAI_API_KEY`, no
 | --- | --- | --- |
 | Shell | Tauri 2 (Rust) | Native window, asset protocol, ~70 IPC commands, SQLite, file system |
 | Engine | Codex CLI (`codex exec --json`) | Runs the built-in `image_gen` tool under your ChatGPT/Codex session |
-| UI | React 19 + TypeScript + Vite 6 | 20 workspaces, design system, Persian/English RTL interface |
+| UI | React 19 + TypeScript + Vite 6 | 20 workspaces, design system, Persian RTL light interface with embedded Peyda |
 | State | Zustand + TanStack Query | Settings, routing, server-state caching |
 | Data | SQLite (WAL) | Projects, jobs, generations, images, prompts, workflows, registry |
 
@@ -37,7 +45,7 @@ Everything the UI offers is wired to a real Rust command. Features the engine ca
 
 ## Install (end users)
 
-1. Download `ARIA-Image-Studio_1.0.0_x64-setup.exe` from the repository's **Releases** page.
+1. Download `ARIA-Image-Studio-1.1.0-setup.exe` from the repository's **Releases** page.
 2. Install with the NSIS installer (per-user, no admin prompt) or run the portable `.exe`.
 3. Install the Codex CLI if you do not have it: `npm install -g @openai/codex`
 4. Open ARIA → **Authentication** → import `auth.json` or *Sign in with ChatGPT*.
