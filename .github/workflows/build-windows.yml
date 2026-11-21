@@ -62,7 +62,7 @@ jobs:
         working-directory: apps/desktop/src-tauri
         run: |
           set -o pipefail
-          cargo check --message-format=short 2>&1 | tee cargo-check.log | python ../../scripts/annotate-cargo.py
+          cargo check --message-format=short 2>&1 | tee cargo-check.log | python "$GITHUB_WORKSPACE/scripts/annotate-cargo.py"
 
       - name: Build Tauri bundle (NSIS)
         run: npm run tauri build -- --bundles nsis

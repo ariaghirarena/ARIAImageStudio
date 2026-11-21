@@ -9,6 +9,8 @@ import os
 import re
 import sys
 
+print("::notice::ARIA cargo annotator active", flush=True)
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 pattern = re.compile(r"^(?P<file>[^:]+):(?P<line>\d+):(?P<col>\d+): error(?:\[(?P<code>[^\]]+)\])?: (?P<msg>.*)$")
 count = 0
