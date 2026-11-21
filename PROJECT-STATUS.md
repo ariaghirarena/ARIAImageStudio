@@ -101,5 +101,7 @@ Tag pipeline: https://github.com/ariaghirarena/ARIAImageStudio/actions/runs/4490
 - Added local image picker to Gallery, Edit and Create. In Create, imported images become references; in Edit they become the selected source immediately.
 - Import copies into the managed Gallery/Imported folder, decodes before indexing, generates a thumbnail, and records dimensions/hash/origin. Original files are not indexed directly and are never removed by Gallery deletion.
 - Accepts supported raster formats, maximum 100 MiB, validates project IDs and cleans managed copies after validation/DB failures.
-- Rust regression test covers real image import, unique copies, thumbnails, invalid project, corrupt-image cleanup and source preservation after deleting the imported record. Pending Windows CI at time of writing.
+- Rust regression test covers real image import, unique copies, thumbnails, invalid project, corrupt-image cleanup and source preservation after deleting the imported record. Passed on Windows CI run `44906576859` (tag `v1.1.1`, commit `50ee39f`).
 - Frontend typecheck, production build and 36 JS tests passed locally. Installed Windows interactive picker and authenticated image editing remain unverified.
+
+Published v1.1.1: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.1 — NSIS 2,510,376 bytes; portable 6,019,584 bytes. Full tag CI succeeded, including 36 JS tests and Rust import/source-preservation and hidden-console tests.
