@@ -101,8 +101,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
-          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.1.2-portable.exe"
-          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.1.2-setup.exe" \;
+          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.1.3-portable.exe"
+          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.1.3-setup.exe" \;
           cd artifacts && sha256sum *.exe > SHA256SUMS.txt && ls -la
 
       - name: Upload build artifacts
@@ -121,6 +121,8 @@ jobs:
           body: |
             ## ARIA Image Studio ${{ github.ref_name }} — ویندوز ۶۴ بیتی
 
+            حفظ چت و پیش‌نویس هنگام تغییر تب و ذخیره محلی پس از بستن برنامه.
+            افزودن دکمه لغو ساخت با توقف فرایند Codex.
             رفع خطای اجرای Codex در مسیرهای دارای فاصله، مانند پوشه نام کاربری ویندوز.
             اجرای مستقیم ورودی رسمی بسته npm با Node، بدون تفسیر پرامپت در CMD.
             افزودن عکس از کامپیوتر در گالری، ویرایش و ساخت تصویر (به‌عنوان مرجع).
@@ -128,8 +130,8 @@ jobs:
             رابط فارسی و راست‌به‌چپ، پوسته روشن و فونت پیدا.
             فرایندهای فرزند با CREATE_NO_WINDOW اجرا می‌شوند؛ آزمون خودکار ویندوز، نداشتن پنجره کنسول را بررسی می‌کند.
 
-            **نصب:** فایل `ARIA-Image-Studio-1.1.2-setup.exe` را اجرا کنید.
-            **بدون نصب:** از فایل `ARIA-Image-Studio-1.1.2-portable.exe` استفاده کنید.
+            **نصب:** فایل `ARIA-Image-Studio-1.1.3-setup.exe` را اجرا کنید.
+            **بدون نصب:** از فایل `ARIA-Image-Studio-1.1.3-portable.exe` استفاده کنید.
             حساب‌ها و پروژه‌های قبلی حفظ می‌شوند؛ ظاهر نصب قبلی به روشن و فارسی تغییر می‌کند.
 
             پیش‌نیاز: ویندوز ۱۰ یا ۱۱ نسخه x64، محیط WebView2 و ابزار رسمی Codex.

@@ -95,7 +95,8 @@ export function App() {
       <div className="main">
         <Topbar />
         <div className="main-scroll">
-          <Page />
+          <div hidden={route !== "create"}><CreatePage /></div>
+          {route !== "create" ? <Page /> : null}
         </div>
       </div>
       <CommandPalette />

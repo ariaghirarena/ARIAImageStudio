@@ -113,3 +113,11 @@ User-reported failure: cmd truncated the executable path at a space in the Windo
 Verified: 36 JavaScript tests, frontend build, Windows cargo check, Rust tests including npm-prefix paths with spaces, literal multiline Persian prompts with quotes/metacharacters, custom batch path with spaces, hidden-console and personal-image import regressions. Full tag pipeline `44911158790` succeeded at `9e760a0`; release `v1.1.2` published. This verifies process launching with fixtures, not generation under the user's real account.
 
 Release: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.2
+
+## v1.1.3 — Create memory and cancellation
+
+- Keep Create mounted across tab navigation; requests and async responses remain attached to the same conversation. Hidden Create shortcuts are disabled and handoffs are applied on re-entry.
+- Save the most recent 200 conversation messages, draft, references and generation options in local WebView storage. On restart, pending messages become interrupted (not falsely still running). This is UI conversation persistence, not automatic semantic conversation context sent to Codex.
+- Add confirmed clear-chat action (does not delete saved images).
+- Direct generations now carry a frontend-generated unique job ID. Cancel uses the same backend cancellation flag and existing Windows process-tree termination. UI waits for completion before enabling another request; late finished images remain in gallery.
+- Local: typecheck, production build and 40 tests pass. New Windows Rust regression exercises cancellation of a real long-running process. Tag CI pending. Installed manual generation/cancel remains unverified.

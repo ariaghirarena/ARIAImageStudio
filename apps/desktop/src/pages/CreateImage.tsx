@@ -1,3 +1,4 @@
+import { useCreateMemory, readCreateMemory, writeCreateMemory, recoverMessages } from "../lib/create-memory";
 import { ImportImageButton } from "../components/ImportImage";
 import { faLabel } from "@aria/core";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -38,7 +39,7 @@ type ChatMessage = {
   role: "user" | "ai";
   text: string;
   images?: ImageRecord[];
-  status?: "running" | "succeeded" | "failed";
+  status?: "running" | "succeeded" | "failed" | "cancelled" | "interrupted";
   durationMs?: number;
   error?: string;
 };
@@ -46,6 +47,9 @@ type ChatMessage = {
 const uid = () => Math.random().toString(36).slice(2, 9);
 
 export function CreatePage() {
+  const route = useApp((state) => state.route);
+  const activeJob = useRef<string | null>(null);
+  const [cancelling, setCancelling] = useState(false);
   const settings = useApp((state) => state.settings);
   const handoff = useApp((state) => state.handoff);
   const setHandoff = useApp((state) => state.setHandoff);
@@ -53,28 +57,28 @@ export function CreatePage() {
   const projects = useProjects();
   const references = useReferences(settings.active_project_id);
 
-  const [raw, setRaw] = useState(handoff.prompt ?? "");
-  const [presetId, setPresetId] = useState(handoff.presetId ?? settings.quality_preset ?? "aria-best-quality");
-  const [styleId, setStyleId] = useState("");
-  const [lightingId, setLightingId] = useState("");
-  const [cameraId, setCameraId] = useState("");
-  const [compositionId, setCompositionId] = useState("");
-  const [aspect, setAspect] = useState(handoff.aspect ?? "4:5");
-  const [negative, setNegative] = useState(handoff.negative ?? "");
-  const [count, setCount] = useState(1);
-  const [projectId, setProjectId] = useState(settings.active_project_id);
-  const [outputDir, setOutputDir] = useState("");
-  const [selectedRefs, setSelectedRefs] = useState<string[]>([]);
+  const [raw, setRaw] = useCreateMemory("raw", handoff.prompt ?? "");
+  const [presetId, setPresetId] = useCreateMemory("presetId", handoff.presetId ?? settings.quality_preset ?? "aria-best-quality");
+  const [styleId, setStyleId] = useCreateMemory("styleId", "");
+  const [lightingId, setLightingId] = useCreateMemory("lightingId", "");
+  const [cameraId, setCameraId] = useCreateMemory("cameraId", "");
+  const [compositionId, setCompositionId] = useCreateMemory("compositionId", "");
+  const [aspect, setAspect] = useCreateMemory("aspect", handoff.aspect ?? "4:5");
+  const [negative, setNegative] = useCreateMemory("negative", handoff.negative ?? "");
+  const [count, setCount] = useCreateMemory("count", 1);
+  const [projectId, setProjectId] = useCreateMemory("projectId", settings.active_project_id);
+  const [outputDir, setOutputDir] = useCreateMemory("outputDir", "");
+  const [selectedRefs, setSelectedRefs] = useCreateMemory<string[]>("selectedRefs", []);
   const [edited, setEdited] = useState<string | null>(null);
-  const [view, setView] = useState<"structured" | "compact" | "original">("structured");
+  const [view, setView] = useCreateMemory<"structured" | "compact" | "original">("view", "structured");
   const [running, setRunning] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => recoverMessages(readCreateMemory<ChatMessage[]>("messages", [])));
   const [lightbox, setLightbox] = useState<ImageRecord | null>(null);
   const [addRefPath, setAddRefPath] = useState("");
   const [refPickerOpen, setRefPickerOpen] = useState(false);
   const [translateBusy, setTranslateBusy] = useState(false);
   const [refineBusy, setRefineBusy] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
+  const [showSettings, setShowSettings] = useCreateMemory("showSettings", false);
   const recent = useGallery({ limit: 6, sort: "newest" });
   const threadRef = useRef<HTMLDivElement | null>(null);
 
@@ -122,8 +126,17 @@ export function CreatePage() {
     quality_preset: presetId,
   }), [projectId, settings, raw, finalPrompt, negative, aspect, styleId, lightingId, cameraId, compositionId, count, selectedRefs, outputDir, presetId]);
 
+  useEffect(() => { writeCreateMemory("messages", messages.slice(-200)); }, [messages]);
+
+  const cancelGeneration = async () => {
+    if (!activeJob.current || cancelling) return;
+    setCancelling(true);
+    try { await api.jobCancel(activeJob.current); }
+    catch (error) { toast(errorText(error), "err"); setCancelling(false); }
+  };
+
   const generate = useCallback(async () => {
-    if (running) return;
+    if (running || activeJob.current) return;
     if (!raw.trim()) {
       toast("اول توضیح تصویر را بنویسید", "err");
       return;
@@ -132,6 +145,9 @@ export function CreatePage() {
     const aiId = uid();
     const aiMsg: ChatMessage = { id: aiId, role: "ai", text: "در حال ساخت تصویر؛ لطفاً منتظر بمانید…", status: "running" };
     setMessages((prev) => [...prev, userMsg, aiMsg]);
+    const jobId = `direct-${crypto.randomUUID()}`;
+    activeJob.current = jobId;
+    setCancelling(false);
     setRunning(true);
     let unlisten: (() => void) | undefined;
     try {
@@ -139,18 +155,20 @@ export function CreatePage() {
         // Keep the conversational status understandable; raw engine output belongs in History.
         void payload;
       });
-      const outcome = await api.generateNow(buildRequest());
+      const outcome = await api.generateNow({ ...buildRequest(), job_id: jobId });
       setMessages((prev) => prev.map((m) => (m.id === aiId ? {
         ...m,
-        status: outcome.images.length > 0 ? "succeeded" : "failed",
+        status: outcome.status === "cancelled" ? "cancelled" : outcome.images.length > 0 ? "succeeded" : "failed",
         images: outcome.images,
         durationMs: outcome.duration_ms,
         error: outcome.error || undefined,
-        text: outcome.images.length > 0
+        text: outcome.status === "cancelled" ? "ساخت تصویر لغو شد." : outcome.images.length > 0
           ? `${outcome.images.length} تصویر ساخته شد.`
           : (outcome.error || "موتور تصویری برنگرداند."),
       } : m)));
-      if (outcome.images.length > 0) {
+      if (outcome.status === "cancelled") {
+        toast("ساخت تصویر لغو شد؛ خروجی احتمالی پیش از لغو در گالری می‌ماند", "info");
+      } else if (outcome.images.length > 0) {
         toast(`${outcome.images.length} تصویر در ${formatDuration(outcome.duration_ms)} ساخته شد`, "ok");
         void recent.refetch();
       } else {
@@ -162,6 +180,8 @@ export function CreatePage() {
       toast(text, "err");
     } finally {
       unlisten?.();
+      activeJob.current = null;
+      setCancelling(false);
       setRunning(false);
     }
   }, [running, raw, toast, buildRequest, recent]);
@@ -205,14 +225,23 @@ export function CreatePage() {
     }
   };
 
-  useHotkeys({
+  useHotkeys(route === "create" ? {
     "mod+enter": () => void generate(),
     "mod+s": () => { if (!savePrompt.isPending) savePrompt.mutate([]); },
-  });
+  } : {});
 
   useEffect(() => {
-    if (handoff.prompt) setHandoff({});
-  }, [handoff.prompt, setHandoff]);
+    if (route !== "create") return;
+    if (handoff.prompt !== undefined) setRaw(handoff.prompt);
+    if (handoff.presetId) setPresetId(handoff.presetId);
+    if (handoff.aspect) setAspect(handoff.aspect);
+    if (handoff.negative !== undefined) setNegative(handoff.negative);
+    if (Object.keys(handoff).length) setHandoff({});
+  }, [route, handoff, setHandoff]);
+
+  useEffect(() => {
+    if (route !== "create") { setLightbox(null); setRefPickerOpen(false); }
+  }, [route]);
 
   const scoreTone = analysis.score >= 75 ? "ok" : analysis.score >= 45 ? "warn" : "err";
 
@@ -224,8 +253,10 @@ export function CreatePage() {
         actions={
           <>
             <ImportImageButton projectId={projectId} onImported={(image) => { setSelectedRefs((current) => [...current, image.path]); toast("عکس انتخاب‌شده به‌عنوان مرجع تصویر بعدی استفاده می‌شود", "info"); }} />
+            <Button icon="trash" disabled={running} onClick={() => { if (window.confirm("گفت‌وگوی این صفحه پاک شود؟ تصاویر ذخیره‌شده حذف نمی‌شوند.")) setMessages([]); }}>پاک‌کردن چت</Button>
             <Button icon="library" loading={savePrompt.isPending} onClick={() => savePrompt.mutate([])}>ذخیره پرامپت</Button>
             <Button icon="grid" onClick={() => enqueue.mutate([])} loading={enqueue.isPending}>افزودن به صف</Button>
+            {running ? <Button variant="danger" icon="close" disabled={cancelling} onClick={() => void cancelGeneration()}>{cancelling ? "در حال لغو…" : "لغو ساخت"}</Button> : null}
             <Button variant="primary" icon="sparkles" loading={running} onClick={() => void generate()}>ساخت تصویر</Button>
           </>
         }
@@ -288,6 +319,7 @@ export function CreatePage() {
                 <button className="composer-chip" onClick={() => { setRaw(""); setEdited(null); }}>
                   <Icon name="close" size={12} /> پاک‌کردن
                 </button>
+                {running ? <Button variant="danger" icon="close" disabled={cancelling} onClick={() => void cancelGeneration()}>{cancelling ? "در حال لغو…" : "لغو ساخت"}</Button> : null}
                 <button className="composer-send" onClick={() => void generate()} disabled={running || !raw.trim()} aria-label="ساخت تصویر">
                   <Icon name="sparkles" size={16} />
                 </button>

@@ -655,3 +655,32 @@ mod windows_launch_tests {
         std::fs::remove_dir_all(root).unwrap();
     }
 }
+
+#[cfg(all(test, windows))]
+mod cancellation_tests {
+    use super::*;
+
+    #[test]
+    fn cancelling_live_direct_request_stops_running_process() {
+        let root = std::env::temp_dir().join(format!("ARIA cancel {}", uuid::Uuid::new_v4()));
+        let prefix = root.join("npm");
+        let bin = prefix.join("node_modules/@openai/codex/bin");
+        std::fs::create_dir_all(&bin).unwrap();
+        let shim = prefix.join("codex.cmd");
+        std::fs::write(&shim, "@exit /b 99\r\n").unwrap();
+        std::fs::write(bin.join("codex.js"), "console.log('READY'); setInterval(() => {}, 1000);").unwrap();
+        let options = ExecOptions {
+            codex_path: shim.to_string_lossy().into(), codex_home: root.clone(), workdir: root.clone(),
+            model: None, reasoning_effort: None, verbosity: None, sandbox_mode: None,
+            images: vec![], timeout: Duration::from_secs(20), extra_args: vec![],
+        };
+        let cancel = Arc::new(AtomicBool::new(false));
+        let flag = cancel.clone();
+        let start = Instant::now();
+        let outcome = run(&options, "test", cancel, move |_| { flag.store(true, Ordering::Relaxed); }).unwrap();
+        assert!(outcome.cancelled);
+        assert!(!outcome.timed_out);
+        assert!(start.elapsed() < Duration::from_secs(15));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+}
