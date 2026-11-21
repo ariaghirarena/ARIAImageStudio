@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": false,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "baseUrl": ".",
+    "paths": {
+      "@aria/core": ["../../packages/core/src/index.ts"],
+      "@aria/ui": ["../../packages/ui/src/index.tsx"],
+      "@aria/prompt-engine": ["../../packages/prompt-engine/src/index.ts"],
+      "@aria/feature-registry": ["../../packages/feature-registry/src/index.ts"]
+    }
+  },
+  "include": ["src", "../../packages/*/src", "vite.config.ts"]
+}

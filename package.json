@@ -1,0 +1,29 @@
+{
+  "name": "aria-image-studio",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ARIA Image Studio — AI image creation, editing and management desktop app powered by Codex built-in image generation",
+  "license": "SEE LICENSE IN LICENSES/",
+  "workspaces": [
+    "apps/desktop",
+    "packages/ui",
+    "packages/core",
+    "packages/prompt-engine",
+    "packages/feature-registry"
+  ],
+  "scripts": {
+    "dev": "npm run dev -w @aria/desktop",
+    "build": "npm run build -w @aria/desktop",
+    "typecheck": "npm run typecheck -w @aria/desktop",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "tauri": "npm run tauri -w @aria/desktop",
+    "features": "node scripts/export-features.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "~5.7.2",
+    "vite": "^6.0.7",
+    "vitest": "^2.1.8"
+  }
+}

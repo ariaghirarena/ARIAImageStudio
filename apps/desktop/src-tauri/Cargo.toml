@@ -1,0 +1,33 @@
+[package]
+name = "aria-image-studio"
+version = "1.0.0"
+description = "ARIA Image Studio — Codex-powered AI image creation studio"
+authors = ["ARIA"]
+edition = "2021"
+rust-version = "1.77.2"
+
+[lib]
+name = "aria_image_studio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["protocol-asset"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+rusqlite = { version = "0.32", features = ["bundled"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1", features = ["v4", "serde"] }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "webp", "gif", "bmp", "tiff"] }
+sha2 = "0.10"
+walkdir = "2"
+dirs = "5"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true
