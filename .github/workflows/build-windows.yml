@@ -74,7 +74,16 @@ jobs:
           exit $status
 
       - name: Build Tauri bundle (NSIS)
-        run: npm run tauri build -- --bundles nsis
+        shell: bash
+        working-directory: apps/desktop
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+        run: |
+          npx tauri build --bundles nsis > tauri-build.log 2>&1
+          status=$?
+          python "$GITHUB_WORKSPACE/scripts/annotate-cargo.py" < tauri-build.log
+          exit $status
 
       - name: Prepare portable executable
         shell: bash

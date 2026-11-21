@@ -24,10 +24,15 @@ print("::notice::ARIA cargo annotator active", flush=True)
 
 emitted = 0
 fallback = []
-pending = ""
+tail = []
+total = 0
 
 for raw in sys.stdin:
     line = ANSI.sub("", raw.rstrip("\n").replace("\r", ""))
+    total += 1
+    tail.append(line)
+    if len(tail) > 24:
+        tail.pop(0)
     print(line, flush=True)
     if not line.strip():
         continue
@@ -51,9 +56,16 @@ for raw in sys.stdin:
     elif stripped.startswith("-->"):
         fallback.append(stripped)
 
+if emitted == 0 and not fallback and total > 0:
+    for index, line in enumerate(tail[-14:]):
+        safe = line.replace("%", "%25")[:900]
+        if safe.strip():
+            print(f"::error file=.github/workflows/build-windows.yml,line=1::tail#{index} {safe}", flush=True)
+    fallback = ["<tail shown above>"]
+
 if emitted == 0:
     for index, line in enumerate(fallback[:LIMIT]):
         safe = line.replace("%", "%25").replace("\n", " ")[:900]
         print(f"::error file=.github/workflows/build-windows.yml,line=1::cargo#{index} {safe}", flush=True)
-    if not fallback:
-        print("::error file=.github/workflows/build-windows.yml,line=1::cargo produced no recognisable diagnostics", flush=True)
+    if not fallback and total > 0:
+        print("::error file=.github/workflows/build-windows.yml,line=1::no recognisable diagnostics", flush=True)
