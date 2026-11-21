@@ -50,7 +50,7 @@ fn is_executable(path: &Path) -> bool {
 /// well-known install locations, then `where`/`which` as a last resort.
 pub fn locate(manual: &str) -> Option<PathBuf> {
     if !manual.trim().is_empty() {
-        let p = PathBuf::from(manual.trim());
+        let p = PathBuf::from(manual.trim().trim_matches('"'));
         if is_executable(&p) {
             return Some(p);
         }
@@ -99,19 +99,26 @@ pub fn locate(manual: &str) -> Option<PathBuf> {
     None
 }
 
-/// `.cmd`/`.bat` shims must be executed through cmd.exe.
+/// Bypass npm's cmd shim when its official JS entry point is present.
+/// This keeps paths with spaces, multiline prompts and shell metacharacters
+/// in a native argument vector rather than interpolating them through cmd /C.
 fn shell_command(exe: &Path) -> Command {
-    let ext = exe
-        .extension()
-        .map(|e| e.to_string_lossy().to_lowercase())
-        .unwrap_or_default();
-    if ext == "cmd" || ext == "bat" {
-        let mut cmd = crate::sysproc::new("cmd");
-        cmd.arg("/C").arg(exe);
-        cmd
-    } else {
-        crate::sysproc::new(exe)
+    #[cfg(windows)]
+    if exe.extension().map(|ext| ext.eq_ignore_ascii_case("cmd") || ext.eq_ignore_ascii_case("bat")).unwrap_or(false) {
+        if let Some(prefix) = exe.parent() {
+            let script = prefix.join("node_modules").join("@openai").join("codex").join("bin").join("codex.js");
+            if script.is_file() {
+                let local_node = prefix.join("node.exe");
+                let node = if local_node.is_file() { local_node } else { PathBuf::from("node.exe") };
+                let mut cmd = crate::sysproc::new(node);
+                cmd.arg(script);
+                return cmd;
+            }
+        }
     }
+    // Rust handles .bat/.cmd quoting on Windows itself. Do not manually
+    // wrap in `cmd /C`: that loses the executable's outer quoting.
+    crate::sysproc::new(exe)
 }
 
 pub fn info(manual_path: &str, codex_home: &Path) -> CodexInfo {
@@ -611,4 +618,40 @@ pub fn newest_mtime(root: &Path) -> Option<SystemTime> {
         .flatten()
         .filter_map(|entry| entry.metadata().ok().and_then(|m| m.modified().ok()))
         .max()
+}
+
+#[cfg(all(test, windows))]
+mod windows_launch_tests {
+    use super::*;
+
+    #[test]
+    fn npm_shim_path_with_spaces_preserves_literal_arguments() {
+        let root = std::env::temp_dir().join(format!("ARIA PARDAZESH user {}", uuid::Uuid::new_v4()));
+        let prefix = root.join("npm global");
+        let bin = prefix.join("node_modules/@openai/codex/bin");
+        std::fs::create_dir_all(&bin).unwrap();
+        let shim = prefix.join("codex.cmd");
+        // If the shim is accidentally used, fail the test immediately.
+        std::fs::write(&shim, "@exit /b 99\r\n").unwrap();
+        std::fs::write(bin.join("codex.js"), "process.stdout.write(JSON.stringify(process.argv.slice(2)))").unwrap();
+        let args = ["exec", "--json", "-C", root.to_str().unwrap(), "--", "ماشین رولزرویس\nquoted \"car\" & echo BAD | more < > %PATH% !VAR! ^ ()"];
+        let output = shell_command(&shim).args(args).output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        let received: Vec<String> = serde_json::from_slice(&output.stdout).unwrap();
+        assert_eq!(received, args);
+        assert_eq!(locate(&format!("\"{}\"", shim.display())).unwrap(), shim);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn custom_batch_path_with_spaces_uses_rust_quoting() {
+        let root = std::env::temp_dir().join(format!("ARIA custom cli {}", uuid::Uuid::new_v4()));
+        std::fs::create_dir_all(&root).unwrap();
+        let shim = root.join("codex.cmd");
+        std::fs::write(&shim, "@echo off\r\necho %~1\r\n").unwrap();
+        let output = shell_command(&shim).arg("--version").output().unwrap();
+        assert!(output.status.success(), "{}", String::from_utf8_lossy(&output.stderr));
+        assert_eq!(String::from_utf8_lossy(&output.stdout).trim(), "--version");
+        std::fs::remove_dir_all(root).unwrap();
+    }
 }

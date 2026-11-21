@@ -100,7 +100,7 @@ database    ${boot?.paths.database ?? ""}`} maxHeight={170} />
 
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>درباره برنامه</h2><Badge tone="accent">v{boot?.version ?? "1.1.1"}</Badge></div>
+            <div className="section-title"><h2>درباره برنامه</h2><Badge tone="accent">v{boot?.version ?? "1.1.2"}</Badge></div>
             <div className="stack" style={{ gap: 6 }}>
               <div className="row between"><span className="small">محصول</span><span className="small strong">ARIA Image Studio</span></div>
               <div className="row between"><span className="small">سیستم‌عامل</span><span className="mono tiny">{boot?.platform}</span></div>

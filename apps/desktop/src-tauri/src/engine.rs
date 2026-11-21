@@ -335,8 +335,8 @@ pub fn execute(ctx: &EngineCtx, req: &GenerationRequest, cancel: Arc<AtomicBool>
     if images.is_empty() {
         if outcome.exit_code.unwrap_or(1) != 0 {
             error = format!(
-                "Codex با کد {:?} متوقف شد. {}",
-                outcome.exit_code,
+                "Codex با کد {} متوقف شد. {}",
+                outcome.exit_code.map(|code| code.to_string()).unwrap_or_else(|| "نامشخص".into()),
                 outcome
                     .stderr_tail
                     .lines()

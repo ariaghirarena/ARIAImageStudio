@@ -101,8 +101,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
-          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.1.1-portable.exe"
-          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.1.1-setup.exe" \;
+          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.1.2-portable.exe"
+          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.1.2-setup.exe" \;
           cd artifacts && sha256sum *.exe > SHA256SUMS.txt && ls -la
 
       - name: Upload build artifacts
@@ -121,13 +121,15 @@ jobs:
           body: |
             ## ARIA Image Studio ${{ github.ref_name }} — ویندوز ۶۴ بیتی
 
+            رفع خطای اجرای Codex در مسیرهای دارای فاصله، مانند پوشه نام کاربری ویندوز.
+            اجرای مستقیم ورودی رسمی بسته npm با Node، بدون تفسیر پرامپت در CMD.
             افزودن عکس از کامپیوتر در گالری، ویرایش و ساخت تصویر (به‌عنوان مرجع).
             عکس در کتابخانه کپی می‌شود؛ فایل شخصی اصلی تغییر نمی‌کند. بدون نیاز به کلید API.
             رابط فارسی و راست‌به‌چپ، پوسته روشن و فونت پیدا.
             فرایندهای فرزند با CREATE_NO_WINDOW اجرا می‌شوند؛ آزمون خودکار ویندوز، نداشتن پنجره کنسول را بررسی می‌کند.
 
-            **نصب:** فایل `ARIA-Image-Studio-1.1.1-setup.exe` را اجرا کنید.
-            **بدون نصب:** از فایل `ARIA-Image-Studio-1.1.1-portable.exe` استفاده کنید.
+            **نصب:** فایل `ARIA-Image-Studio-1.1.2-setup.exe` را اجرا کنید.
+            **بدون نصب:** از فایل `ARIA-Image-Studio-1.1.2-portable.exe` استفاده کنید.
             حساب‌ها و پروژه‌های قبلی حفظ می‌شوند؛ ظاهر نصب قبلی به روشن و فارسی تغییر می‌کند.
 
             پیش‌نیاز: ویندوز ۱۰ یا ۱۱ نسخه x64، محیط WebView2 و ابزار رسمی Codex.
@@ -137,6 +139,6 @@ jobs:
             نصب‌کننده امضای دیجیتال ندارد و ممکن است SmartScreen هشدار بدهد.
             برای بررسی صحت فایل، از `SHA256SUMS.txt` استفاده کنید.
             ساخت و ویرایش با حساب واقعی و بررسی چشمی همه تب‌ها پس از نصب هنوز تأیید نشده‌اند.
-            راهنمای کامل و منبع قلم در `docs/RELEASE-1.1.1.fa.md` است.
+            راهنمای کامل و منبع قلم در `docs/RELEASE-1.1.0.fa.md` است.
           files: artifacts/*
           fail_on_unmatched_files: true
