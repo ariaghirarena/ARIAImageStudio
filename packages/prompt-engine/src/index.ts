@@ -211,14 +211,14 @@ export const COMPOSITION_PRESETS: Preset[] = [
 ];
 
 export const ASPECT_PRESETS = [
-  { id: "1:1", label: "1:1 Square" },
-  { id: "4:5", label: "4:5 Portrait" },
-  { id: "3:4", label: "3:4 Portrait" },
-  { id: "2:3", label: "2:3 Poster" },
-  { id: "16:9", label: "16:9 Landscape" },
-  { id: "9:16", label: "9:16 Story" },
-  { id: "21:9", label: "21:9 Cinematic" },
-  { id: "3:2", label: "3:2 Photo" },
+  { id: "1:1", label: "۱:۱ مربع" },
+  { id: "4:5", label: "۴:۵ عمودی" },
+  { id: "3:4", label: "۳:۴ عمودی" },
+  { id: "2:3", label: "۲:۳ پوستر" },
+  { id: "16:9", label: "۱۶:۹ افقی" },
+  { id: "9:16", label: "۹:۱۶ استوری" },
+  { id: "21:9", label: "۲۱:۹ سینمایی" },
+  { id: "3:2", label: "۳:۲ عکس" },
 ];
 
 export const PROMPT_TEMPLATES = [
@@ -329,12 +329,12 @@ export function analyzePrompt(raw: string, negative = "", aspect = ""): PromptAn
   if (hasAspect) score += 6;
   if (hasNegative) score += 6;
   const tips: string[] = [];
-  if (!hasSubject) tips.push("Describe the main subject in at least a few words.");
-  if (words < 8) tips.push("Add one concrete detail: material, setting or mood.");
-  if (!hasLighting) tips.push("Pick a lighting preset to stabilise the look.");
-  if (!hasComposition) tips.push("Choose a composition preset so the framing is intentional.");
-  if (!hasAspect) tips.push("State the aspect ratio you need for the final placement.");
-  if (!hasNegative) tips.push("Add negative constraints to avoid watermarks and clutter.");
+  if (!hasSubject) tips.push("موضوع اصلی تصویر را با چند کلمه مشخص کنید.");
+  if (words < 8) tips.push("یک جزئیات مشخص مثل جنس، محیط یا حس تصویر اضافه کنید.");
+  if (!hasLighting) tips.push("برای مشخص‌شدن نور، یک تنظیم آماده نور انتخاب کنید.");
+  if (!hasComposition) tips.push("برای مشخص‌شدن کادر، یک ترکیب‌بندی انتخاب کنید.");
+  if (!hasAspect) tips.push("نسبت ابعاد مناسب محل استفاده تصویر را مشخص کنید.");
+  if (!hasNegative) tips.push("برای جلوگیری از واترمارک و شلوغی، موارد ممنوعه را بنویسید.");
   return {
     language: detectLanguage(text),
     words,

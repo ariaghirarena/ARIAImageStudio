@@ -335,7 +335,7 @@ pub fn execute(ctx: &EngineCtx, req: &GenerationRequest, cancel: Arc<AtomicBool>
     if images.is_empty() {
         if outcome.exit_code.unwrap_or(1) != 0 {
             error = format!(
-                "Codex exited with code {:?}. {}",
+                "Codex با کد {:?} متوقف شد. {}",
                 outcome.exit_code,
                 outcome
                     .stderr_tail
@@ -349,7 +349,7 @@ pub fn execute(ctx: &EngineCtx, req: &GenerationRequest, cancel: Arc<AtomicBool>
                     .join(" ")
             );
         } else {
-            error = "Codex finished without producing an image. The account may not have access to the built-in image tool on this model.".into();
+            error = "Codex بدون ساخت تصویر پایان یافت. ممکن است حساب شما در این مدل به ابزار داخلی تصویرسازی دسترسی نداشته باشد.".into();
         }
         status = if outcome.cancelled { "cancelled".into() } else { "failed".into() };
     }

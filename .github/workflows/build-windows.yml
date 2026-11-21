@@ -38,6 +38,9 @@ jobs:
       - name: Type check
         run: npm run typecheck
 
+      - name: Automated tests
+        run: npm test
+
       - name: Build frontend bundle
         run: npm run build
 
@@ -73,6 +76,15 @@ jobs:
           fi
           exit $status
 
+      - name: Verify Windows console children stay hidden
+        shell: bash
+        working-directory: apps/desktop/src-tauri
+        run: |
+          cargo test sysproc::tests --lib > console-test.log 2>&1
+          status=$?
+          python "$GITHUB_WORKSPACE/scripts/annotate-cargo.py" < console-test.log
+          exit $status
+
       - name: Build Tauri bundle (NSIS)
         shell: bash
         working-directory: apps/desktop
@@ -89,8 +101,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p artifacts
-          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.0.0-portable.exe"
-          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.0.0-setup.exe" \;
+          cp "apps/desktop/src-tauri/target/release/aria-image-studio.exe" "artifacts/ARIA-Image-Studio-1.1.0-portable.exe"
+          find apps/desktop/src-tauri/target/release/bundle/nsis -name "*.exe" -exec cp {} "artifacts/ARIA-Image-Studio-1.1.0-setup.exe" \;
           cd artifacts && sha256sum *.exe > SHA256SUMS.txt && ls -la
 
       - name: Upload build artifacts
@@ -109,8 +121,8 @@ jobs:
           body: |
             ## ARIA Image Studio ${{ github.ref_name }} — Windows x64
 
-            **Install:** run `ARIA-Image-Studio-1.0.0-setup.exe` (per-user, no admin prompt).
-            **Portable:** run `ARIA-Image-Studio-1.0.0-portable.exe` from any folder.
+            **Install:** run `ARIA-Image-Studio-1.1.0-setup.exe` (per-user, no admin prompt).
+            **Portable:** run `ARIA-Image-Studio-1.1.0-portable.exe` from any folder.
 
             Requirements: Windows 10/11 x64 with WebView2 (preinstalled on Windows 11) and the
             official Codex CLI (`npm install -g @openai/codex`) signed in with your own account.

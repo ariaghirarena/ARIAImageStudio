@@ -6,12 +6,12 @@ import { useGallery } from "../lib/hooks";
 import { ImageThumb, PageHeader } from "../components/shell";
 
 const AXES = [
-  { id: "style", label: "Style", instruction: "restyle the image in the requested visual style while keeping the subject, pose and framing identical" },
-  { id: "colour", label: "Colour", instruction: "shift the colour palette of the image while keeping every object, its position and the lighting shape unchanged" },
-  { id: "background", label: "Background", instruction: "replace only the background with a variation that keeps the subject untouched and the light direction consistent" },
-  { id: "lighting", label: "Lighting", instruction: "change the lighting mood only, keeping geometry, objects and framing identical" },
-  { id: "angle", label: "Camera angle", instruction: "render the same scene from a nearby camera angle, keeping all objects and their relationships intact" },
-  { id: "minimal", label: "Minimal", instruction: "produce a more minimal version of the same scene with fewer distractions, same subject and message" },
+  { id: "style", label: "سبک", instruction: "restyle the image in the requested visual style while keeping the subject, pose and framing identical" },
+  { id: "colour", label: "رنگ", instruction: "shift the colour palette of the image while keeping every object, its position and the lighting shape unchanged" },
+  { id: "background", label: "پس‌زمینه", instruction: "replace only the background with a variation that keeps the subject untouched and the light direction consistent" },
+  { id: "lighting", label: "نور", instruction: "change the lighting mood only, keeping geometry, objects and framing identical" },
+  { id: "angle", label: "زاویه دوربین", instruction: "render the same scene from a nearby camera angle, keeping all objects and their relationships intact" },
+  { id: "minimal", label: "مینیمال", instruction: "produce a more minimal version of the same scene with fewer distractions, same subject and message" },
 ];
 
 export function VariationsPage() {
@@ -22,7 +22,7 @@ export function VariationsPage() {
 
   const [source, setSource] = useState<ImageRecord | null>(null);
   const [axis, setAxis] = useState("style");
-  const [styleHint, setStyleHint] = useState("cinematic, warm amber highlights, deep shadows");
+  const [styleHint, setStyleHint] = useState("سینمایی، نورهای گرم کهربایی، سایه‌های عمیق");
   const [count, setCount] = useState(2);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<ImageRecord[]>([]);
@@ -50,7 +50,7 @@ export function VariationsPage() {
 
   const run = async () => {
     if (!source) {
-      toast("Pick a source image", "err");
+      toast("یک تصویر انتخاب کنید", "err");
       return;
     }
     setRunning(true);
@@ -80,11 +80,11 @@ export function VariationsPage() {
         quality_preset: "variation",
       });
       if (outcome.images.length === 0) {
-        toast(outcome.error || "No variation was produced", "err");
+        toast(outcome.error || "نسخه‌ای ساخته نشد", "err");
       } else {
         setResults(outcome.images);
         setPickB(outcome.images[0]);
-        toast(`${outcome.images.length} variation(s) in ${formatDuration(outcome.duration_ms)}`, "ok");
+        toast(`${outcome.images.length} نسخه در ${formatDuration(outcome.duration_ms)} ساخته شد`, "ok");
         gallery.refetch();
       }
     } catch (error) {
@@ -97,12 +97,12 @@ export function VariationsPage() {
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Image Variations"
-        description="Branch from an existing image along one explicit axis. Each variant is a separate engine call — no fabricated batch parameters."
+        title="تنوع تصویر"
+        description="از یک تصویر موجود، در یک محور مشخص نسخه‌های جدید بسازید؛ مثلاً فقط سبک یا فقط نور عوض شود."
         actions={
           <>
-            <Button icon="image" onClick={() => setPickerOpen(true)}>Choose source</Button>
-            <Button variant="primary" icon="layers" loading={running} onClick={() => void run()}>Generate variations</Button>
+            <Button icon="image" onClick={() => setPickerOpen(true)}>انتخاب تصویر اصلی</Button>
+            <Button variant="primary" icon="layers" loading={running} onClick={() => void run()}>ساخت نسخه‌ها</Button>
           </>
         }
       />
@@ -110,7 +110,7 @@ export function VariationsPage() {
       <div className="grid split">
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>Variation axis</h2><span>one change at a time</span></div>
+            <div className="section-title"><h2>محور تغییر</h2><span>هر بار فقط یک تغییر</span></div>
             <div className="preset-chips">
               {AXES.map((entry) => (
                 <button key={entry.id} className="preset-chip" data-active={axis === entry.id ? "true" : "false"} onClick={() => setAxis(entry.id)}>{entry.label}</button>
@@ -118,45 +118,45 @@ export function VariationsPage() {
             </div>
             {axis === "style" ? (
               <div className="field" style={{ marginTop: 12 }}>
-                <span className="field-label">Style direction</span>
-                <input className="mono" style={{ background: "#080a0e", border: "1px solid var(--line)", borderRadius: 10, padding: "9px 11px" }} value={styleHint} onChange={(event) => setStyleHint(event.target.value)} />
+                <span className="field-label">جهت سبک</span>
+                <input className="mono" style={{ background: "#fff", border: "1px solid var(--line-strong)", borderRadius: 10, padding: "9px 11px", direction: "ltr", textAlign: "left" }} value={styleHint} onChange={(event) => setStyleHint(event.target.value)} />
               </div>
             ) : null}
             <div className="row wrap" style={{ marginTop: 14 }}>
               <div style={{ width: 180 }}>
-                <Select value={String(count)} onChange={(event) => setCount(Number(event.target.value))} aria-label="Variant count" options={[1, 2, 3, 4].map((value) => ({ value: String(value), label: `${value} variant(s)` }))} />
+                <Select value={String(count)} onChange={(event) => setCount(Number(event.target.value))} aria-label="تعداد نسخه" options={[1, 2, 3, 4].map((value) => ({ value: String(value), label: `${value} نسخه` }))} />
               </div>
-              <span className="dim tiny">Each variant is one built-in image_gen call.</span>
+              <span className="dim tiny">هر نسخه یک فراخوانی جدا از موتور است.</span>
             </div>
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Compare</h2><span>drag the divider</span></div>
+            <div className="section-title"><h2>مقایسه</h2><span>دسته را بکشید</span></div>
             {pickA && pickB ? (
-              <CompareSlider beforeSrc={toFileUrl(pickA.path)} afterSrc={toFileUrl(pickB.path)} alt="variation comparison" />
+              <CompareSlider beforeSrc={toFileUrl(pickA.path)} afterSrc={toFileUrl(pickB.path)} alt="مقایسه نسخه‌ها" />
             ) : (
-              <div className="muted small">Select two images (source + variant) to compare.</div>
+              <div className="muted small">دو تصویر انتخاب کنید (اصلی + نسخه) تا مقایسه شوند.</div>
             )}
             <div className="row wrap" style={{ marginTop: 10 }}>
-              <Badge tone="info">A: {pickA?.file_name ?? "—"}</Badge>
-              <Badge tone="accent">B: {pickB?.file_name ?? "—"}</Badge>
+              <Badge tone="info">الف: {pickA?.file_name ?? "—"}</Badge>
+              <Badge tone="accent">ب: {pickB?.file_name ?? "—"}</Badge>
               {pickA && pickB ? (
                 <Button size="sm" icon="activity" onClick={async () => {
                   try {
                     const metric = await api.imageCompare(pickA.path, pickB.path);
                     toast(metric.same_dimensions
-                      ? `Mean absolute difference ${metric.mean_absolute_difference.toFixed(2)} / 255 ${metric.identical ? "(identical)" : ""}`
-                      : "Images have different dimensions — visual comparison only", "info");
+                      ? `اختلاف میانگین ${metric.mean_absolute_difference.toFixed(2)} از ۲۵۵ ${metric.identical ? "(یکسان)" : ""}`
+                      : "ابعاد دو تصویر فرق دارد — فقط مقایسه چشمی ممکن است", "info");
                   } catch (error) { toast(errorText(error), "err"); }
-                }}>Diff metric</Button>
+                }}>محاسبه اختلاف</Button>
               ) : null}
             </div>
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Results</h2><span>{results.length} variant(s)</span></div>
-            {running ? <Spinner label="Codex is generating variations…" /> : null}
-            {results.length === 0 && !running ? <div className="muted small">Variants appear here after a run.</div> : null}
+            <div className="section-title"><h2>نتیجه‌ها</h2><span>{results.length} نسخه</span></div>
+            {running ? <Spinner label="در حال ساخت نسخه‌ها…" /> : null}
+            {results.length === 0 && !running ? <div className="muted small">نسخه‌ها بعد از اجرا اینجا نمایش داده می‌شود.</div> : null}
             <div className="gallery-grid">
               {results.map((image) => (
                 <ImageThumb
@@ -165,7 +165,7 @@ export function VariationsPage() {
                   onClick={() => setLightbox(image)}
                   overlay={
                     <div className="thumb-flag">
-                      <Button size="sm" onClick={(event) => { event.stopPropagation(); setPickB(image); }}>Compare</Button>
+                      <Button size="sm" onClick={(event) => { event.stopPropagation(); setPickB(image); }}>مقایسه</Button>
                     </div>
                   }
                 />
@@ -176,28 +176,28 @@ export function VariationsPage() {
 
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>Source</h2></div>
+            <div className="section-title"><h2>تصویر اصلی</h2></div>
             {source ? (
               <>
                 <div className="thumb" style={{ aspectRatio: "1" }} onClick={() => setLightbox(source)} role="button" tabIndex={0}>
                   <img src={toFileUrl(source.path)} alt={source.file_name} />
                   <div className="thumb-meta"><span className="truncate">{source.file_name}</span><span className="mono">{source.width}×{source.height}</span></div>
                 </div>
-                <Button size="sm" icon="refresh" style={{ marginTop: 10 }} onClick={() => setPickerOpen(true)}>Change source</Button>
+                <Button size="sm" icon="refresh" style={{ marginTop: 10 }} onClick={() => setPickerOpen(true)}>تغییر تصویر اصلی</Button>
               </>
-            ) : <div className="muted small">Pick an image from the library.</div>}
+            ) : <div className="muted small">یک تصویر از کتابخانه انتخاب کنید.</div>}
           </Card>
           <Card>
-            <div className="section-title"><h2>Branching</h2></div>
+            <div className="section-title"><h2>تاریخچه نسخه‌ها</h2></div>
             <p className="muted tiny" style={{ margin: 0 }}>
-              Every variation is stored with its parent image id, so the edit history of a shot stays traceable in the Gallery.
+              هر نسخه با شناسه تصویر اصلی ذخیره می‌شود، پس مسیر ویرایش هر عکس در گالری قابل ردیابی است.
             </p>
-            <Button size="sm" variant="ghost" icon="image" style={{ marginTop: 10 }} onClick={() => useApp.getState().setRoute("gallery")}>Open gallery</Button>
+            <Button size="sm" variant="ghost" icon="image" style={{ marginTop: 10 }} onClick={() => useApp.getState().setRoute("gallery")}>بازکردن گالری</Button>
           </Card>
         </div>
       </div>
 
-      <Modal open={pickerOpen} title="Choose the source image" onClose={() => setPickerOpen(false)} wide>
+      <Modal open={pickerOpen} title="انتخاب تصویر اصلی" onClose={() => setPickerOpen(false)} wide>
         <div className="gallery-grid" style={{ maxHeight: "56vh", overflow: "auto" }}>
           {gallery.data?.items.map((image) => (
             <ImageThumb key={image.id} record={image} onClick={() => { setSource(image); setPickA(image); setPickerOpen(false); }} />
@@ -213,8 +213,8 @@ export function VariationsPage() {
           onClose={() => setLightbox(null)}
           side={
             <div className="row wrap">
-              <Button size="sm" icon="check" onClick={() => { setPickB(lightbox); setLightbox(null); }}>Compare as B</Button>
-              <Button size="sm" icon="star" onClick={async () => { await api.imageFavorite(lightbox.id, true).catch(() => undefined); toast("Marked as favourite", "ok"); }}>Favourite</Button>
+              <Button size="sm" icon="check" onClick={() => { setPickB(lightbox); setLightbox(null); }}>مقایسه به‌عنوان ب</Button>
+              <Button size="sm" icon="star" onClick={async () => { await api.imageFavorite(lightbox.id, true).catch(() => undefined); toast("به علاقه‌مندی‌ها اضافه شد", "ok"); }}>علاقه‌مندی</Button>
             </div>
           }
         />

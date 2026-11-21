@@ -379,8 +379,8 @@ ROWS.push(
 
   // 251-260 Settings
   ["General settings", "Persisted settings.json with validation and clamping.", "implemented", "available", "none", "automated"],
-  ["Language", "Persian/English UI switch with RTL support.", "implemented", "available", "none", "automated"],
-  ["Theme", "Obsidian and Graphite dark themes.", "implemented", "available", "none", "automated"],
+  ["Language", "Persian interface with RTL layout; v1.1 uses a single Persian locale.", "implemented", "available", "none", "automated"],
+  ["Theme", "Light interface with embedded Peyda font; legacy installs migrate to light.", "implemented", "available", "none", "automated"],
   ["Save location", "Configurable output root and per-project folders.", "implemented", "available", "none", "automated"],
   ["Preview quality", "Thumbnail quality control.", "implemented", "available", "none", "automated"],
   ["Cache settings", "Thumbnail cache size limit setting.", "implemented", "available", "none", "automated"],

@@ -1,3 +1,4 @@
+import { faLabel } from "@aria/core";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Badge, Button, Card, CodeBlock, EmptyState, Icon, Input, Modal, Spinner } from "@aria/ui";
 import { api, errorText, formatDate, isDesktopRuntime, onEvent, type Profile } from "@aria/core";
@@ -40,7 +41,7 @@ export function AuthPage() {
         (payload) => {
           setLoginBusy(false);
           const ok = Boolean(payload.status?.authenticated);
-          toast(ok ? "Codex account connected" : `Login finished without a session — ${payload.status?.detail ?? "check the log"}`, ok ? "ok" : "err");
+          toast(ok ? "حساب Codex متصل شد" : `ورود بدون اتصال حساب پایان یافت — ${payload.status?.detail ?? "گزارش را بررسی کنید"}`, ok ? "ok" : "err");
           void refresh();
           profiles.refetch();
         },
@@ -55,14 +56,14 @@ export function AuthPage() {
   const importAction = useAction(
     (path: string, name: string) => api.authImport(path, name),
     {
-      success: "auth.json imported into an isolated ARIA profile",
+      success: "فایل auth.json در حساب جداگانه ARIA وارد شد",
       onDone: () => { setSourcePath(""); setProfileName(""); void refresh(); profiles.refetch(); },
     },
   );
 
   const replaceAction = useAction(
     (profileId: string, path: string) => api.authReplace(profileId, path),
-    { success: "Credential replaced and encrypted backup refreshed", onDone: () => { setReplaceFor(null); setSourcePath(""); profiles.refetch(); } },
+    { success: "اطلاعات ورود جایگزین و نسخه پشتیبان رمزگذاری‌شده تازه شد", onDone: () => { setReplaceFor(null); setSourcePath(""); profiles.refetch(); } },
   );
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export function AuthPage() {
         const candidate = event.payload.paths.find((path) => path.toLowerCase().endsWith(".json"));
         if (candidate) {
           setSourcePath(candidate);
-          toast(`auth.json detected at ${candidate}`, "info");
+          toast(`فایل ورود پیدا شد: ${candidate}`, "info");
         }
       });
     }).catch(() => undefined);
@@ -84,7 +85,7 @@ export function AuthPage() {
   const checkStatus = async (profile: Profile) => {
     try {
       const result = await api.authStatus(profile.id);
-      setStatusMap((map) => ({ ...map, [profile.id]: `${result.authenticated ? "Authenticated" : "Not authenticated"} · ${result.detail || "no detail"}` }));
+      setStatusMap((map) => ({ ...map, [profile.id]: `${result.authenticated ? "وارد شده‌اید" : "وارد نشده‌اید"} · ${result.detail || "جزئیاتی ثبت نشده"}` }));
       profiles.refetch();
       void refresh();
     } catch (error) {
@@ -111,12 +112,12 @@ export function AuthPage() {
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Authentication"
-        description="ARIA talks to your Codex account through an isolated CODEX_HOME. Import an existing auth.json or run the official ChatGPT login flow — tokens are never displayed, logged or written to the database."
+        title="ورود به حساب"
+        description="برنامه از پوشه اختصاصی هر حساب با Codex ارتباط می‌گیرد. فایل auth.json موجود را وارد کنید یا از ورود رسمی ChatGPT استفاده کنید؛ توکن‌ها نمایش داده نمی‌شوند و در گزارش یا پایگاه داده ذخیره نمی‌شوند."
         actions={
           <>
-            <Button icon="refresh" onClick={() => { profiles.refetch(); void refresh(); }}>Rescan</Button>
-            <Button variant="ghost" icon="activity" onClick={() => setAdvancedOpen(true)}>How it works</Button>
+            <Button icon="refresh" onClick={() => { profiles.refetch(); void refresh(); }}>بررسی مجدد</Button>
+            <Button variant="ghost" icon="activity" onClick={() => setAdvancedOpen(true)}>روش کار</Button>
           </>
         }
       />
@@ -125,14 +126,14 @@ export function AuthPage() {
         <div className="stack">
           <Card highlight>
             <div className="section-title">
-              <h2>Connect Codex account</h2>
-              {activeProfile ? <Badge tone="ok">active · {activeProfile.name}</Badge> : <Badge tone="warn">no active profile</Badge>}
+              <h2>اتصال حساب Codex</h2>
+              {activeProfile ? <Badge tone="ok">فعال · {activeProfile.name}</Badge> : <Badge tone="warn">حساب فعالی نیست</Badge>}
             </div>
 
             <div className="grid cols-2">
               <div className="stack">
                 <PickerField
-                  label="auth.json file"
+                  label="فایل اطلاعات ورود (auth.json)"
                   mode="file"
                   value={sourcePath}
                   onChange={setSourcePath}
@@ -140,8 +141,8 @@ export function AuthPage() {
                   filter={(entry) => !entry.is_dir && entry.name.toLowerCase().endsWith(".json")}
                 />
                 <div className="field">
-                  <span className="field-label">Profile name (optional)</span>
-                  <Input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="Personal ChatGPT account" />
+                  <span className="field-label">نام حساب (اختیاری)</span>
+                  <Input value={profileName} onChange={(event) => setProfileName(event.target.value)} placeholder="حساب شخصی ChatGPT" />
                 </div>
                 <Button
                   variant="primary"
@@ -150,49 +151,47 @@ export function AuthPage() {
                   disabled={!sourcePath.trim()}
                   onClick={() => importAction.mutate([sourcePath, profileName])}
                 >
-                  Import auth.json
+                  واردکردن فایل ورود
                 </Button>
                 <div className="field-hint">
-                  The file is validated structurally, copied into an ARIA profile, ACL-hardened and backed up with DPAPI.
-                  Drag &amp; drop a .json file anywhere on this page to stage it.
+                  ساختار فایل بررسی می‌شود، سپس در پوشه اختصاصی حساب کپی و با دسترسی محدود و رمزگذاری ویندوز محافظت می‌شود. می‌توانید فایل JSON را روی این صفحه بکشید و رها کنید.
                 </div>
               </div>
 
               <div className="stack">
                 <div className="card tight" style={{ background: "rgba(125,211,252,.04)" }}>
-                  <div className="strong small" style={{ marginBottom: 4 }}>Sign in with ChatGPT</div>
+                  <div className="strong small" style={{ marginBottom: 4 }}>ورود با ChatGPT</div>
                   <p className="muted tiny" style={{ marginTop: 0 }}>
-                    Runs <span className="mono">codex login</span> with CODEX_HOME pointed at the ARIA profile, so your personal
-                    Codex configuration is never touched.
+                    دستور <span className="mono">codex login</span> با پوشه اختصاصی ARIA اجرا می‌شود؛ تنظیمات شخصی Codex شما تغییر نمی‌کند.
                   </p>
                   <div className="row wrap">
                     <Button variant="primary" icon="external" loading={loginBusy && !loginDevice} disabled={loginBusy} onClick={() => { setLoginDevice(false); void startLogin(); }}>
-                      Sign in with ChatGPT
+                      ورود با ChatGPT
                     </Button>
                     <Button icon="key" loading={loginBusy && loginDevice} disabled={loginBusy} onClick={() => { setLoginDevice(true); void startLogin(); }}>
-                      Device auth
+                      ورود با کد دستگاه
                     </Button>
                   </div>
                 </div>
                 <div className="log-view" ref={logRef} style={{ minHeight: 120 }}>
-                  {loginLog.length === 0 ? "Login output appears here (redacted)." : loginLog.join("\n")}
+                  {loginLog.length === 0 ? "گزارش ورود بدون اطلاعات حساس اینجا نمایش داده می‌شود." : loginLog.join("\n")}
                 </div>
-                {loginBusy ? <Spinner label="Waiting for the Codex login to finish…" /> : null}
+                {loginBusy ? <Spinner label="در انتظار پایان ورود به Codex…" /> : null}
               </div>
             </div>
           </Card>
 
           <Card>
             <div className="section-title">
-              <h2>Codex profiles</h2>
-              <span>{profiles.data?.length ?? 0} profile(s) · isolated CODEX_HOME each</span>
+              <h2>حساب‌های Codex</h2>
+              <span>{profiles.data?.length ?? 0} حساب؛ هرکدام با پوشه اختصاصی</span>
             </div>
-            {profiles.isLoading ? <Spinner label="Loading profiles…" /> : null}
+            {profiles.isLoading ? <Spinner label="در حال بارگذاری حساب‌ها…" /> : null}
             {profiles.data && profiles.data.length === 0 ? (
               <EmptyState
                 icon="key"
-                title="No Codex profile yet"
-                description="Import auth.json or sign in with ChatGPT to create the first isolated profile. ARIA never stores token values in its database."
+                title="هنوز حساب Codex ندارید"
+                description="فایل auth.json را وارد کنید یا با ChatGPT وارد شوید. برنامه مقدار توکن‌ها را در پایگاه داده ذخیره نمی‌کند."
               />
             ) : null}
             <div className="list">
@@ -204,32 +203,32 @@ export function AuthPage() {
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="row wrap" style={{ gap: 8 }}>
                       <span className="strong small">{profile.name}</span>
-                      {profile.id === activeProfileId ? <Badge tone="accent">active</Badge> : null}
+                      {profile.id === activeProfileId ? <Badge tone="accent">فعال</Badge> : null}
                       <Badge tone={profile.status === "authenticated" ? "ok" : profile.status === "credentials_present" ? "warn" : "default"}>
-                        {profile.status.replace("_", " ")}
+                        {faLabel(profile.status)}
                       </Badge>
-                      <Badge>{profile.auth_mode || "unknown"}</Badge>
+                      <Badge>{faLabel(profile.auth_mode || "unknown")}</Badge>
                     </div>
                     <div className="muted tiny" style={{ marginTop: 4 }}>
-                      last check: {formatDate(profile.last_checked)} · created {formatDate(profile.created_at)}
+                      آخرین بررسی: {formatDate(profile.last_checked)} · ساخته‌شده در {formatDate(profile.created_at)}
                     </div>
                     {statusMap[profile.id] ? <div className="tiny" style={{ marginTop: 4, color: "var(--text-soft)" }}>{statusMap[profile.id]}</div> : null}
-                    {profile.last_error ? <div className="tiny" style={{ marginTop: 4, color: "#fecaca" }}>{profile.last_error}</div> : null}
+                    {profile.last_error ? <div className="tiny" style={{ marginTop: 4, color: "var(--err)" }}>{profile.last_error}</div> : null}
                   </div>
                   <div className="row wrap" style={{ justifyContent: "flex-end", gap: 6 }}>
-                    <Button size="sm" icon="activity" onClick={() => void checkStatus(profile)}>Check</Button>
+                    <Button size="sm" icon="activity" onClick={() => void checkStatus(profile)}>بررسی</Button>
                     {profile.id !== activeProfileId ? (
-                      <Button size="sm" icon="check" onClick={async () => { await api.authSetActive(profile.id); await refresh(); profiles.refetch(); }}>Use</Button>
+                      <Button size="sm" icon="check" onClick={async () => { await api.authSetActive(profile.id); await refresh(); profiles.refetch(); }}>استفاده</Button>
                     ) : null}
-                    <Button size="sm" icon="refresh" onClick={() => { setReplaceFor(profile); setSourcePath(""); }}>Replace</Button>
+                    <Button size="sm" icon="refresh" onClick={() => { setReplaceFor(profile); setSourcePath(""); }}>جایگزینی</Button>
                     <Button size="sm" icon="key" onClick={async () => {
                       try {
                         await api.authRestoreVault(profile.id);
-                        toast("Credential restored from the DPAPI backup", "ok");
+                        toast("اطلاعات ورود از پشتیبان رمزگذاری‌شده ویندوز بازیابی شد", "ok");
                         profiles.refetch();
                       } catch (error) { toast(errorText(error), "err"); }
-                    }}>Restore</Button>
-                    <Button size="sm" icon="trash" variant="danger" onClick={() => setConfirmDelete(profile)}>Remove</Button>
+                    }}>بازیابی</Button>
+                    <Button size="sm" icon="trash" variant="danger" onClick={() => setConfirmDelete(profile)}>حذف</Button>
                   </div>
                 </div>
               ))}
@@ -237,18 +236,18 @@ export function AuthPage() {
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Active session</h2></div>
+            <div className="section-title"><h2>نشست فعال</h2></div>
             <div className="grid cols-3">
               <div>
-                <div className="tiny muted">Login status</div>
-                <div className="small strong">{activeProfile?.status ?? "no profile"}</div>
+                <div className="tiny muted">وضعیت ورود</div>
+                <div className="small strong">{faLabel(activeProfile?.status ?? "بدون حساب")}</div>
               </div>
               <div>
-                <div className="tiny muted">Auth mode</div>
+                <div className="tiny muted">روش ورود</div>
                 <div className="small strong">{activeProfile?.auth_mode ?? "—"}</div>
               </div>
               <div>
-                <div className="tiny muted">Last verified</div>
+                <div className="tiny muted">آخرین تأیید</div>
                 <div className="small strong">{formatDate(activeProfile?.last_checked)}</div>
               </div>
             </div>
@@ -262,27 +261,27 @@ export function AuthPage() {
                   if (!activeProfile) return;
                   try {
                     await api.authLogout(activeProfile.id);
-                    toast("Signed out and local credentials wiped", "ok");
+                    toast("خروج انجام شد و اطلاعات ورود محلی پاک شد", "ok");
                     profiles.refetch();
                     void refresh();
                   } catch (error) { toast(errorText(error), "err"); }
                 }}
               >
-                Sign out
+                خروج از حساب
               </Button>
-              <Button size="sm" variant="ghost" icon="terminal" onClick={() => setAdvancedOpen(true)}>Show CODEX_HOME layout</Button>
+              <Button size="sm" variant="ghost" icon="terminal" onClick={() => setAdvancedOpen(true)}>نمایش ساختار پوشه Codex</Button>
             </div>
           </Card>
         </div>
 
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>Engine prerequisites</h2></div>
+            <div className="section-title"><h2>پیش‌نیازهای موتور</h2></div>
             <div className="list">
               {[
-                { label: "Codex CLI installed", ok: Boolean(boot?.codex.found), detail: boot?.codex.version || "not detected" },
-                { label: "Credentials present", ok: Boolean(boot?.codex.auth_present), detail: boot?.paths.codex_home ?? "" },
-                { label: "imagegen skill in CODEX_HOME", ok: Boolean(boot?.codex.skill_present), detail: boot?.codex.skill_present ? "installed" : "install from AI Engine" },
+                { label: "نصب ابزار Codex", ok: Boolean(boot?.codex.found), detail: boot?.codex.version || "شناسایی نشد" },
+                { label: "وجود اطلاعات ورود", ok: Boolean(boot?.codex.auth_present), detail: boot?.paths.codex_home ?? "" },
+                { label: "مهارت تصویرسازی در پوشه Codex", ok: Boolean(boot?.codex.skill_present), detail: boot?.codex.skill_present ? "installed" : "از بخش موتور هوش مصنوعی نصب کنید" },
               ].map((check) => (
                 <div className="list-row" key={check.label}>
                   <span style={{ color: check.ok ? "var(--ok)" : "var(--warn)" }}><Icon name={check.ok ? "check" : "alert"} size={13} /></span>
@@ -296,21 +295,21 @@ export function AuthPage() {
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Security model</h2></div>
+            <div className="section-title"><h2>مدل امنیتی</h2></div>
             <ul className="small muted" style={{ margin: 0, paddingInlineStart: 18, lineHeight: 1.8 }}>
-              <li>Tokens are never parsed for display and never enter SQLite.</li>
-              <li>auth.json is stored under an ARIA-owned profile folder with user-only ACLs.</li>
-              <li>A DPAPI-encrypted backup allows recovery after a corrupted replace.</li>
-              <li>Signing out wipes the local credential copy with an overwrite pass.</li>
-              <li>Every generation runs in the workspace-write sandbox, not full access.</li>
+              <li>توکن‌ها برای نمایش خوانده نمی‌شوند و وارد پایگاه داده نمی‌شوند.</li>
+              <li>فایل auth.json در پوشه اختصاصی ARIA با دسترسی محدود به کاربر ذخیره می‌شود.</li>
+              <li>نسخه پشتیبان رمزگذاری‌شده ویندوز امکان بازیابی پس از خرابی را می‌دهد.</li>
+              <li>خروج از حساب نسخه محلی اطلاعات ورود را با بازنویسی فایل پاک می‌کند.</li>
+              <li>سطح دسترسی اجرای موتور را در تنظیمات بررسی کنید؛ حالت پیشنهادی فقط نوشتن در پوشه پروژه است.</li>
             </ul>
           </Card>
 
           <Card tight>
-            <div className="strong small" style={{ marginBottom: 6 }}>Official documentation</div>
+            <div className="strong small" style={{ marginBottom: 6 }}>مستندات رسمی</div>
             <div className="row wrap">
-              <Button size="sm" icon="external" onClick={() => void api.openUrl("https://developers.openai.com/codex/auth").catch(() => undefined)}>Codex auth</Button>
-              <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/openai/codex").catch(() => undefined)}>Codex repo</Button>
+              <Button size="sm" icon="external" onClick={() => void api.openUrl("https://developers.openai.com/codex/auth").catch(() => undefined)}>راهنمای ورود Codex</Button>
+              <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/openai/codex").catch(() => undefined)}>مخزن Codex</Button>
             </div>
           </Card>
         </div>
@@ -318,14 +317,14 @@ export function AuthPage() {
 
       <Modal
         open={advancedOpen}
-        title="How ARIA uses Codex credentials"
-        subtitle="No API key, no undocumented endpoints"
+        title="برنامه چگونه از اطلاعات ورود استفاده می‌کند؟"
+        subtitle="بدون کلید API و بدون سرویس غیررسمی"
         onClose={() => setAdvancedOpen(false)}
       >
         <div className="stack">
           <p className="muted small" style={{ margin: 0 }}>
-            ARIA runs the official CLI with a dedicated home. That home contains auth.json, config.toml, sessions and the
-            <span className="mono"> generated_images</span> folder where the built-in tool writes its output.
+            ابزار رسمی با پوشه اختصاصی اجرا می‌شود. این پوشه شامل اطلاعات ورود، تنظیمات، نشست‌ها و پوشه
+            <span className="mono"> generated_images</span> برای دریافت تصاویر ساخته‌شده است.
           </p>
           <CodeBlock text={`%LOCALAPPDATA%\\ARIA\\ImageStudio\\
   profiles\\<profile-id>\\
@@ -337,51 +336,50 @@ export function AuthPage() {
       generated_images\\  (built-in tool output, imported by ARIA)
       sessions\\          (audit trail of runs)`} />
           <p className="muted small" style={{ margin: 0 }}>
-            Login status is checked with <span className="mono">codex login status</span>; the raw output is redacted and
-            only the presence of a session is recorded.
+            وضعیت ورود با دستور <span className="mono">codex login status</span>بررسی می‌شود؛ اطلاعات حساس گزارش حذف می‌شود و فقط وضعیت نشست ثبت می‌شود.
           </p>
         </div>
       </Modal>
 
       <Modal
         open={Boolean(replaceFor)}
-        title="Replace credential"
+        title="جایگزینی اطلاعات ورود"
         subtitle={replaceFor?.name}
         onClose={() => setReplaceFor(null)}
         footer={
           <>
-            <Button variant="ghost" onClick={() => setReplaceFor(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setReplaceFor(null)}>لغو</Button>
             <Button
               variant="primary"
               loading={replaceAction.isPending}
               disabled={!sourcePath.trim()}
               onClick={() => { if (replaceFor) replaceAction.mutate([replaceFor.id, sourcePath]); }}
             >
-              Replace auth.json
+              جایگزینی فایل auth.json
             </Button>
           </>
         }
       >
         <PickerField
-          label="New auth.json"
+          label="فایل auth.json جدید"
           mode="file"
           value={sourcePath}
           onChange={setSourcePath}
           filter={(entry) => !entry.is_dir && entry.name.toLowerCase().endsWith(".json")}
         />
         <p className="muted tiny" style={{ marginTop: 10 }}>
-          The previous credential is backed up with DPAPI before replacement, then the new file is validated and hardened.
+          قبل از جایگزینی، اطلاعات ورود قبلی با حفاظت ویندوز پشتیبان‌گیری می‌شود؛ سپس فایل جدید بررسی و دسترسی آن محدود می‌شود.
         </p>
       </Modal>
 
       <Modal
         open={Boolean(confirmDelete)}
-        title="Delete Codex account"
-        subtitle="This cannot be undone"
+        title="حذف حساب Codex"
+        subtitle="این کار قابل بازگشت نیست"
         onClose={() => setConfirmDelete(null)}
         footer={
           <>
-            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>Cancel</Button>
+            <Button variant="ghost" onClick={() => setConfirmDelete(null)}>لغو</Button>
             <Button
               variant="danger"
               icon="trash"
@@ -389,21 +387,20 @@ export function AuthPage() {
                 if (!confirmDelete) return;
                 try {
                   await api.authDelete(confirmDelete.id, true);
-                  toast("Profile and credentials securely deleted", "ok");
+                  toast("حساب و اطلاعات ورود آن پاک شد", "ok");
                   setConfirmDelete(null);
                   profiles.refetch();
                   void refresh();
                 } catch (error) { toast(errorText(error), "err"); }
               }}
             >
-              Delete permanently
+              حذف دائمی
             </Button>
           </>
         }
       >
         <p className="small muted">
-          This runs <span className="mono">codex logout</span>, overwrites the stored credential files, deletes the encrypted
-          backup and removes the profile folder. Images and prompts are not touched.
+          این کار دستور <span className="mono">codex logout</span>را اجرا و اطلاعات ورود، نسخه پشتیبان رمزگذاری‌شده و پوشه حساب را پاک می‌کند. تصاویر و پرامپت‌ها حذف نمی‌شوند.
         </p>
       </Modal>
     </div>

@@ -79,7 +79,7 @@ pub fn harden_file(path: &Path) -> std::io::Result<()> {
         let user = std::env::var("USERNAME").unwrap_or_default();
         if !user.is_empty() {
             use std::process::Command;
-            let _ = Command::new("icacls")
+            let _ = crate::sysproc::new("icacls")
                 .arg(path)
                 .args(["/inheritance:r"])
                 .args(["/grant:r", &format!("{}:F", user)])

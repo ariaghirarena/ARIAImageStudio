@@ -6,13 +6,13 @@ import { useAction, useGallery } from "../lib/hooks";
 import { ImageThumb, PageHeader } from "../components/shell";
 
 const EDIT_PRESETS = [
-  { id: "background", label: "Replace background", instruction: "replace the background with a clean, softly lit studio set that matches the subject's existing light direction" },
-  { id: "remove", label: "Remove an element", instruction: "remove the described unwanted element and reconstruct the area naturally behind it" },
-  { id: "add", label: "Add an element", instruction: "add the described element, matching perspective, scale and lighting" },
-  { id: "recolor", label: "Change colour", instruction: "change the colour of the described object only, keeping material and highlights" },
-  { id: "relight", label: "Change lighting", instruction: "relight the scene with soft directional light from the left, keeping every object and the framing identical" },
-  { id: "angle", label: "Change angle", instruction: "re-render the same scene from a slightly lower camera angle while keeping all products and styling identical" },
-  { id: "style", label: "Change style", instruction: "restyle the image while keeping the subject, pose and composition exactly the same" },
+  { id: "background", label: "تعویض پس‌زمینه", instruction: "replace the background with a clean, softly lit studio set that matches the subject's existing light direction" },
+  { id: "remove", label: "حذف یک عنصر", instruction: "remove the described unwanted element and reconstruct the area naturally behind it" },
+  { id: "add", label: "افزودن عنصر", instruction: "add the described element, matching perspective, scale and lighting" },
+  { id: "recolor", label: "تغییر رنگ", instruction: "change the colour of the described object only, keeping material and highlights" },
+  { id: "relight", label: "تغییر نور", instruction: "relight the scene with soft directional light from the left, keeping every object and the framing identical" },
+  { id: "angle", label: "تغییر زاویه", instruction: "re-render the same scene from a slightly lower camera angle while keeping all products and styling identical" },
+  { id: "style", label: "تغییر سبک", instruction: "restyle the image while keeping the subject, pose and composition exactly the same" },
 ];
 
 export function EditPage() {
@@ -25,7 +25,7 @@ export function EditPage() {
   const [source, setSource] = useState<ImageRecord | null>(null);
   const [selectOpen, setSelectOpen] = useState(false);
   const [instruction, setInstruction] = useState("");
-  const [invariants, setInvariants] = useState("keep the subject identity, geometry, pose and framing unchanged");
+  const [invariants, setInvariants] = useState("هویت موضوع، شکل، حالت و کادربندی را بدون تغییر نگه دار");
   const [presetId, setPresetId] = useState("background");
   const [running, setRunning] = useState(false);
   const [log, setLog] = useState<string[]>([]);
@@ -78,7 +78,7 @@ export function EditPage() {
       quality,
     }, "edit"),
     {
-      success: "Derivative created — the original is untouched",
+      success: "نسخه جدید ساخته شد — تصویر اصلی دست نخورده ماند",
       onDone: (value) => {
         const record = value as unknown as ImageRecord;
         if (record?.path) {
@@ -91,7 +91,7 @@ export function EditPage() {
 
   const generateEdit = async () => {
     if (!source) {
-      toast("Select a source image first", "err");
+      toast("اول یک تصویر انتخاب کنید", "err");
       return;
     }
     setRunning(true);
@@ -116,10 +116,10 @@ export function EditPage() {
       setLog(outcome.log.slice(-40));
       if (outcome.images.length > 0) {
         setResult(outcome.images[0]);
-        toast(`Edit finished in ${formatDuration(outcome.duration_ms)}`, "ok");
+        toast(`ویرایش در ${formatDuration(outcome.duration_ms)} تمام شد`, "ok");
         gallery.refetch();
       } else {
-        toast(outcome.error || "No edited image was produced", "err");
+        toast(outcome.error || "تصویر ویرایش‌شده‌ای ساخته نشد", "err");
       }
     } catch (error) {
       toast(errorText(error), "err");
@@ -131,19 +131,19 @@ export function EditPage() {
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Edit Image"
-        description="Two honest paths: an engine edit through the built-in image tool (prompt-directed, identity-preserving), or non-destructive local adjustments that never touch the original."
+        title="ویرایش تصویر"
+        description="دو راه واقعی: ویرایش با موتور (با پرامپت، بدون تغییر هویت تصویر) یا تنظیمات محلی که تصویر اصلی را تغییر نمی‌دهد."
         actions={
           <>
-            <Button icon="image" onClick={() => setSelectOpen(true)}>Choose image</Button>
-            <Button variant="primary" icon="wand" loading={running} disabled={!source} onClick={() => void generateEdit()}>Generate edit</Button>
+            <Button icon="image" onClick={() => setSelectOpen(true)}>انتخاب تصویر</Button>
+            <Button variant="primary" icon="wand" loading={running} disabled={!source} onClick={() => void generateEdit()}>ساخت ویرایش</Button>
           </>
         }
       />
 
       <div className="grid split-left">
         <Card>
-          <div className="section-title"><h2>Source</h2>{source ? <Badge tone="accent">{source.format.toUpperCase()}</Badge> : null}</div>
+          <div className="section-title"><h2>تصویر اصلی</h2>{source ? <Badge tone="accent">{source.format.toUpperCase()}</Badge> : null}</div>
           {source ? (
             <div className="stack">
               <div className="thumb" style={{ aspectRatio: "4/3" }} onClick={() => setLightbox(source)} role="button" tabIndex={0}>
@@ -154,14 +154,14 @@ export function EditPage() {
                 <span className="tiny muted truncate" style={{ maxWidth: 220 }}>{source.file_name}</span>
                 <span className="tiny dim">{(source.size_bytes / 1024).toFixed(0)} KB</span>
               </div>
-              <Button size="sm" variant="ghost" icon="refresh" onClick={() => setSelectOpen(true)}>Pick another</Button>
+              <Button size="sm" variant="ghost" icon="refresh" onClick={() => setSelectOpen(true)}>انتخاب تصویر دیگر</Button>
             </div>
-          ) : gallery.isLoading ? <Spinner label="Loading gallery…" /> : <div className="muted small">No images in the library yet.</div>}
+          ) : gallery.isLoading ? <Spinner label="در حال بارگذاری گالری…" /> : <div className="muted small">هنوز تصویری در کتابخانه نیست.</div>}
         </Card>
 
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>Engine edit</h2><span>Built-in image_gen</span></div>
+            <div className="section-title"><h2>ویرایش با موتور</h2><span>ابزار داخلی image_gen</span></div>
             <div className="preset-chips" style={{ marginBottom: 10 }}>
               {EDIT_PRESETS.map((preset) => (
                 <button key={preset.id} className="preset-chip" data-active={presetId === preset.id ? "true" : "false"} onClick={() => { setPresetId(preset.id); setInstruction(preset.instruction); }}>
@@ -170,33 +170,33 @@ export function EditPage() {
               ))}
             </div>
             <div className="field">
-              <span className="field-label">Change only</span>
-              <Textarea value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="Describe the single change you want" style={{ minHeight: 74 }} />
+              <span className="field-label">فقط این را تغییر بده</span>
+              <Textarea value={instruction} onChange={(event) => setInstruction(event.target.value)} placeholder="تغییری که می‌خواهید را بنویسید" style={{ minHeight: 74 }} />
             </div>
             <div className="field" style={{ marginTop: 10 }}>
-              <span className="field-label">Keep unchanged</span>
+              <span className="field-label">این‌ها دست نخورند</span>
               <Textarea value={invariants} onChange={(event) => setInvariants(event.target.value)} style={{ minHeight: 58 }} />
             </div>
             {log.length > 0 ? <div className="log-view" style={{ marginTop: 10, maxHeight: 140 }}>{log.join("\n")}</div> : null}
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Local adjustments</h2><span>Non-destructive · writes a new file</span></div>
+            <div className="section-title"><h2>تنظیمات محلی</h2><span>بدون تغییر اصل · فایل جدید می‌سازد</span></div>
             <div className="grid cols-2">
-              <Slider label="Brightness" value={brightness} min={-80} max={80} onChange={setBrightness} />
-              <Slider label="Contrast" value={contrast} min={0.4} max={2} step={0.05} onChange={setContrast} />
-              <Slider label="Saturation" value={saturation} min={0} max={2} step={0.05} onChange={setSaturation} />
-              <Slider label="Sharpen" value={sharpen} min={0} max={4} step={0.1} onChange={setSharpen} />
-              <Slider label="Upscale" value={scale} min={1} max={4} step={0.1} onChange={setScale} />
-              <Slider label="Background tolerance" value={tolerance} min={2} max={40} onChange={setTolerance} />
+              <Slider label="روشنایی" value={brightness} min={-80} max={80} onChange={setBrightness} />
+              <Slider label="کنتراست" value={contrast} min={0.4} max={2} step={0.05} onChange={setContrast} />
+              <Slider label="اشباع رنگ" value={saturation} min={0} max={2} step={0.05} onChange={setSaturation} />
+              <Slider label="وضوح (شارپن)" value={sharpen} min={0} max={4} step={0.1} onChange={setSharpen} />
+              <Slider label="بزرگ‌نمایی" value={scale} min={1} max={4} step={0.1} onChange={setScale} />
+              <Slider label="حساسیت حذف پس‌زمینه" value={tolerance} min={2} max={40} onChange={setTolerance} />
             </div>
             <div className="row wrap" style={{ marginTop: 12, gap: 16 }}>
-              <div className="row" style={{ gap: 8 }}><Toggle checked={denoise} onChange={setDenoise} label="Denoise" /><span className="small">Median denoise</span></div>
-              <div className="row" style={{ gap: 8 }}><Toggle checked={removeBg} onChange={setRemoveBg} label="Remove background" /><span className="small">Chroma key cutout</span></div>
+              <div className="row" style={{ gap: 8 }}><Toggle checked={denoise} onChange={setDenoise} label="حذف نویز" /><span className="small">حذف نویز میانه</span></div>
+              <div className="row" style={{ gap: 8 }}><Toggle checked={removeBg} onChange={setRemoveBg} label="حذف پس‌زمینه" /><span className="small">برش با کلید رنگ</span></div>
             </div>
             <div className="grid cols-2" style={{ marginTop: 12 }}>
-              <Select value={format} onChange={(event) => setFormat(event.target.value)} aria-label="Format" options={[{ value: "png", label: "PNG" }, { value: "jpg", label: "JPEG" }, { value: "webp", label: "WebP" }]} />
-              <Slider label="Quality" value={quality} min={40} max={100} onChange={setQuality} />
+              <Select value={format} onChange={(event) => setFormat(event.target.value)} aria-label="فرمت" options={[{ value: "png", label: "PNG" }, { value: "jpg", label: "JPEG" }, { value: "webp", label: "WebP" }]} />
+              <Slider label="کیفیت" value={quality} min={40} max={100} onChange={setQuality} />
             </div>
             <div className="row" style={{ marginTop: 12 }}>
               <Button variant="primary" icon="sliders" loading={postProcess.isPending || processing} disabled={!source} onClick={() => {
@@ -205,21 +205,21 @@ export function EditPage() {
                 postProcess.mutate([source.id]);
                 window.setTimeout(() => setProcessing(false), 600);
               }}>
-                Apply locally
+                اعمال محلی
               </Button>
-              <span className="dim tiny">Lanczos resampling — not AI super-resolution.</span>
+              <span className="dim tiny">بزرگ‌نمایی با روش Lanczos است، نه هوش مصنوعی.</span>
             </div>
           </Card>
 
           {result ? (
             <Card>
-              <div className="section-title"><h2>Comparison</h2><span>drag the handle</span></div>
+              <div className="section-title"><h2>مقایسه قبل و بعد</h2><span>دسته را بکشید</span></div>
               {source ? <CompareSlider beforeSrc={toFileUrl(source.path)} afterSrc={toFileUrl(result.path)} alt={result.file_name} /> : null}
               <div className="row between" style={{ marginTop: 10 }}>
                 <span className="tiny muted truncate">{result.file_name} · {result.width}×{result.height}</span>
                 <div className="row" style={{ gap: 6 }}>
-                  <Button size="sm" icon="eye" onClick={() => setLightbox(result)}>Inspect</Button>
-                  <Button size="sm" icon="folder" onClick={() => void api.openPath(result.path).catch(() => undefined)}>Reveal</Button>
+                  <Button size="sm" icon="eye" onClick={() => setLightbox(result)}>مشاهده</Button>
+                  <Button size="sm" icon="folder" onClick={() => void api.openPath(result.path).catch(() => undefined)}>نمایش در پوشه</Button>
                 </div>
               </div>
             </Card>
@@ -227,8 +227,8 @@ export function EditPage() {
         </div>
       </div>
 
-      <Modal open={selectOpen} title="Choose a source image" subtitle="Only images already indexed by ARIA" onClose={() => setSelectOpen(false)} wide>
-        {gallery.data && gallery.data.items.length === 0 ? <div className="muted small">The gallery is empty.</div> : null}
+      <Modal open={selectOpen} title="انتخاب تصویر اصلی" subtitle="فقط تصاویری که در ARIA ثبت شده‌اند" onClose={() => setSelectOpen(false)} wide>
+        {gallery.data && gallery.data.items.length === 0 ? <div className="muted small">گالری خالی است.</div> : null}
         <div className="gallery-grid" style={{ maxHeight: "56vh", overflow: "auto" }}>
           {gallery.data?.items.map((image) => (
             <ImageThumb
@@ -244,8 +244,8 @@ export function EditPage() {
       {lightbox ? (
         <Lightbox src={toFileUrl(lightbox.path)} title={lightbox.file_name} subtitle={`${lightbox.width}×${lightbox.height}`} onClose={() => setLightbox(null)}
           side={<div className="row wrap">
-            <Button size="sm" icon="wand" onClick={() => { setSource(lightbox); setLightbox(null); }}>Use as source</Button>
-            <Button size="sm" icon="folder" onClick={() => void api.openPath(lightbox.path).catch(() => undefined)}>Reveal</Button>
+            <Button size="sm" icon="wand" onClick={() => { setSource(lightbox); setLightbox(null); }}>استفاده به‌عنوان اصلی</Button>
+            <Button size="sm" icon="folder" onClick={() => void api.openPath(lightbox.path).catch(() => undefined)}>نمایش در پوشه</Button>
           </div>}
         />
       ) : null}
@@ -253,7 +253,7 @@ export function EditPage() {
       <div className="row" style={{ marginTop: 16, gap: 8 }}>
         <Icon name="info" size={13} />
         <span className="dim tiny">
-          Engine edits depend on what the built-in tool supports for your account. True masked inpainting is not exposed, which is why ARIA labels it as unsupported instead of faking it.
+          ویرایش با موتور به پشتیبانی حساب شما از ابزار داخلی بستگی دارد. ویرایش با ماسک واقعی در موتور در دسترس نیست و برنامه آن را پشتیبانی‌نشده اعلام می‌کند، نه اینکه تظاهر کند.
         </span>
       </div>
     </div>

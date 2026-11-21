@@ -449,8 +449,8 @@ _تنظیمات_
 | # | Feature | Status | Availability | Dependencies | Test state |
 | --- | --- | --- | --- | --- | --- |
 | 251 | **General settings** — Persisted settings.json with validation and clamping. | Implemented | available | none | automated |
-| 252 | **Language** — Persian/English UI switch with RTL support. | Implemented | available | none | automated |
-| 253 | **Theme** — Obsidian and Graphite dark themes. | Implemented | available | none | automated |
+| 252 | **Language** — Persian interface with RTL layout; v1.1 uses a single Persian locale. | Implemented | available | none | automated |
+| 253 | **Theme** — Light interface with embedded Peyda font; legacy installs migrate to light. | Implemented | available | none | automated |
 | 254 | **Save location** — Configurable output root and per-project folders. | Implemented | available | none | automated |
 | 255 | **Preview quality** — Thumbnail quality control. | Implemented | available | none | automated |
 | 256 | **Cache settings** — Thumbnail cache size limit setting. | Implemented | available | none | automated |

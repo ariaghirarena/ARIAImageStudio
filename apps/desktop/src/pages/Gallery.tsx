@@ -52,7 +52,7 @@ export function GalleryPage() {
     const list = tags.split(",").map((tag) => tag.trim()).filter(Boolean);
     try {
       await api.imageTags(lightbox.id, list);
-      toast("Tags updated", "ok");
+      toast("برچسب‌ها به‌روزرسانی شد", "ok");
       gallery.refetch();
       setLightbox({ ...lightbox, tags_json: JSON.stringify(list) });
     } catch (error) { toast(errorText(error), "err"); }
@@ -61,13 +61,13 @@ export function GalleryPage() {
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Gallery"
-        description={`${total} image(s) indexed · thumbnails, hashes and prompts are generated locally.`}
+        title="گالری تصاویر"
+        description={`${total} تصویر ثبت شده است · تصویرهای کوچک و کد تأیید فایل‌ها روی همین کامپیوتر ساخته می‌شود.`}
         actions={
           <>
-            <Button icon="layers" onClick={() => setDupesOpen(true)}>Find duplicates</Button>
-            <Button icon="refresh" onClick={() => gallery.refetch()}>Refresh</Button>
-            <Button variant="primary" icon="sparkles" onClick={() => setRoute("create")}>New image</Button>
+            <Button icon="layers" onClick={() => setDupesOpen(true)}>یافتن تکراری‌ها</Button>
+            <Button icon="refresh" onClick={() => gallery.refetch()}>تازه‌سازی</Button>
+            <Button variant="primary" icon="sparkles" onClick={() => setRoute("create")}>تصویر جدید</Button>
           </>
         }
       />
@@ -76,43 +76,43 @@ export function GalleryPage() {
         <div className="gal-toolbar">
           <div className="search-box">
             <Icon name="search" size={14} />
-            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search filename, prompt, note or tag…" />
+            <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="جستجو در نام فایل، پرامپت، یادداشت یا برچسب…" />
           </div>
-          <Select value={projectId} onChange={(event) => setProjectId(event.target.value)} aria-label="Project"
-            options={[{ value: "", label: "All projects" }, ...(projects.data ?? []).map((project) => ({ value: project.id, label: project.name }))]} />
-          <Select value={format} onChange={(event) => setFormat(event.target.value)} aria-label="Format"
-            options={[{ value: "", label: "All formats" }, { value: "png", label: "PNG" }, { value: "jpg", label: "JPEG" }, { value: "webp", label: "WebP" }, { value: "gif", label: "GIF" }]} />
-          <Select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort"
-            options={[{ value: "newest", label: "Newest" }, { value: "oldest", label: "Oldest" }, { value: "largest", label: "Largest" }, { value: "name", label: "Name" }]} />
+          <Select value={projectId} onChange={(event) => setProjectId(event.target.value)} aria-label="پروژه"
+            options={[{ value: "", label: "همه پروژه‌ها" }, ...(projects.data ?? []).map((project) => ({ value: project.id, label: project.name }))]} />
+          <Select value={format} onChange={(event) => setFormat(event.target.value)} aria-label="فرمت"
+            options={[{ value: "", label: "همه فرمت‌ها" }, { value: "png", label: "PNG" }, { value: "jpg", label: "JPEG" }, { value: "webp", label: "WebP" }, { value: "gif", label: "GIF" }]} />
+          <Select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="مرتب‌سازی"
+            options={[{ value: "newest", label: "جدیدترین" }, { value: "oldest", label: "قدیمی‌ترین" }, { value: "largest", label: "بزرگ‌ترین" }, { value: "name", label: "نام" }]} />
           <div className="row" style={{ gap: 8 }}>
-            <Toggle checked={favoritesOnly} onChange={setFavoritesOnly} label="Favourites only" />
-            <span className="small">Favourites</span>
+            <Toggle checked={favoritesOnly} onChange={setFavoritesOnly} label="فقط علاقه‌مندی‌ها" />
+            <span className="small">علاقه‌مندی‌ها</span>
           </div>
           <span className="spacer" />
           {selected.length > 0 ? (
             <div className="row" style={{ gap: 6 }}>
-              <Badge tone="accent">{selected.length} selected</Badge>
-              <Button size="sm" icon="edit" onClick={() => setRenameOpen(true)}>Rename</Button>
-              <Button size="sm" icon="trash" variant="danger" onClick={() => setBulkDelete(true)}>Delete</Button>
-              <Button size="sm" variant="ghost" onClick={() => setSelected([])}>Clear</Button>
+              <Badge tone="accent">{selected.length} انتخاب شده</Badge>
+              <Button size="sm" icon="edit" onClick={() => setRenameOpen(true)}>تغییر نام</Button>
+              <Button size="sm" icon="trash" variant="danger" onClick={() => setBulkDelete(true)}>حذف</Button>
+              <Button size="sm" variant="ghost" onClick={() => setSelected([])}>پاک‌کردن انتخاب</Button>
             </div>
           ) : (
             <Button size="sm" variant="ghost" icon="check" onClick={() => setSelected(allSelected ? [] : items.map((image) => image.id))}>
-              {allSelected ? "Deselect all" : "Select all"}
+              {allSelected ? "حذف همه انتخاب‌ها" : "انتخاب همه"}
             </Button>
           )}
         </div>
       </Card>
 
-      {gallery.isLoading ? <Spinner label="Loading images…" /> : null}
+      {gallery.isLoading ? <Spinner label="در حال بارگذاری تصاویر…" /> : null}
       {gallery.isError ? <div className="banner err"><Icon name="alert" size={14} /><span>{errorText(gallery.error)}</span></div> : null}
 
       {items.length === 0 && !gallery.isLoading ? (
         <EmptyState
           icon="image"
-          title={search || favoritesOnly || format || projectId ? "No image matches these filters" : "The gallery is empty"}
-          description={search || favoritesOnly || format || projectId ? "Clear the filters or search for a different term." : "Generated, edited and imported images are indexed here automatically with their prompts."}
-          action={<Button variant="primary" icon="sparkles" onClick={() => setRoute("create")}>Generate the first image</Button>}
+          title={search || favoritesOnly || format || projectId ? "تصویری با این فیلترها نیست" : "گالری خالی است"}
+          description={search || favoritesOnly || format || projectId ? "فیلترها را پاک کنید یا عبارت دیگری جستجو کنید." : "تصاویر ساخته‌شده، ویرایش‌شده و واردشده با پرامپتشان خودکار اینجا ثبت می‌شود."}
+          action={<Button variant="primary" icon="sparkles" onClick={() => setRoute("create")}>ساخت اولین تصویر</Button>}
         />
       ) : (
         <div className="gallery-grid" style={{ marginTop: 14 }}>
@@ -126,7 +126,7 @@ export function GalleryPage() {
               <button
                 className="thumb-select"
                 onClick={(event) => { event.stopPropagation(); toggleSelect(image.id); }}
-                aria-label="Select image"
+                aria-label="انتخاب تصویر"
               >
                 <Icon name={selected.includes(image.id) ? "check" : "circle"} size={11} />
               </button>
@@ -138,7 +138,7 @@ export function GalleryPage() {
 
       {items.length < total ? (
         <div className="row" style={{ marginTop: 16, justifyContent: "center" }}>
-          <Button icon="chevronDown" onClick={() => setPageSize((value) => value + 60)}>Load more ({total - items.length} remaining)</Button>
+          <Button icon="chevronDown" onClick={() => setPageSize((value) => value + 60)}>نمایش بیشتر ({total - items.length} تصویر دیگر)</Button>
         </div>
       ) : null}
 
@@ -151,29 +151,29 @@ export function GalleryPage() {
           side={
             <div className="stack" style={{ gap: 12 }}>
               <div>
-                <div className="tiny muted" style={{ marginBottom: 4 }}>Prompt</div>
+                <div className="tiny muted" style={{ marginBottom: 4 }}>پرامپت</div>
                 <div className="small" style={{ whiteSpace: "pre-wrap", maxHeight: 150, overflow: "auto", color: "var(--text-soft)" }}>{lightbox.prompt || "—"}</div>
               </div>
               <div className="field">
-                <span className="field-label">Tags</span>
-                <Input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="product, studio, winter" />
-                <Button size="sm" onClick={() => void applyTags()} style={{ marginTop: 6 }}>Save tags</Button>
+                <span className="field-label">برچسب‌ها</span>
+                <Input value={tags} onChange={(event) => setTags(event.target.value)} placeholder="محصول، استودیو، زمستان" />
+                <Button size="sm" onClick={() => void applyTags()} style={{ marginTop: 6 }}>ذخیره برچسب‌ها</Button>
               </div>
               <div className="field">
-                <span className="field-label">Note</span>
+                <span className="field-label">یادداشت</span>
                 <Textarea value={note} onChange={(event) => setNote(event.target.value)} style={{ minHeight: 60 }} />
                 <Button size="sm" style={{ marginTop: 6 }} onClick={async () => {
-                  try { await api.imageNote(lightbox.id, note); toast("Note saved", "ok"); gallery.refetch(); } catch (error) { toast(errorText(error), "err"); }
-                }}>Save note</Button>
+                  try { await api.imageNote(lightbox.id, note); toast("یادداشت ذخیره شد", "ok"); gallery.refetch(); } catch (error) { toast(errorText(error), "err"); }
+                }}>ذخیره یادداشت</Button>
               </div>
               <div className="row wrap" style={{ gap: 6 }}>
                 <Button size="sm" icon="star" onClick={async () => {
                   try { await api.imageFavorite(lightbox.id, !lightbox.favorite); gallery.refetch(); setLightbox({ ...lightbox, favorite: !lightbox.favorite }); } catch (error) { toast(errorText(error), "err"); }
-                }}>{lightbox.favorite ? "Unfavourite" : "Favourite"}</Button>
-                <Button size="sm" icon="wand" onClick={() => { setHandoff({ imageId: lightbox.id, imagePath: lightbox.path }); setRoute("edit"); }}>Edit</Button>
-                <Button size="sm" icon="layers" onClick={() => { setHandoff({ imageId: lightbox.id, imagePath: lightbox.path }); setRoute("variations"); }}>Vary</Button>
-                <Button size="sm" icon="folder" onClick={() => void api.openPath(lightbox.path).catch(() => undefined)}>Reveal</Button>
-                <Button size="sm" variant="danger" icon="trash" onClick={() => setDeleteTarget(lightbox)}>Delete</Button>
+                }}>{lightbox.favorite ? "حذف از علاقه‌مندی" : "علاقه‌مندی"}</Button>
+                <Button size="sm" icon="wand" onClick={() => { setHandoff({ imageId: lightbox.id, imagePath: lightbox.path }); setRoute("edit"); }}>ویرایش</Button>
+                <Button size="sm" icon="layers" onClick={() => { setHandoff({ imageId: lightbox.id, imagePath: lightbox.path }); setRoute("variations"); }}>ساخت نسخه</Button>
+                <Button size="sm" icon="folder" onClick={() => void api.openPath(lightbox.path).catch(() => undefined)}>نمایش در پوشه</Button>
+                <Button size="sm" variant="danger" icon="trash" onClick={() => setDeleteTarget(lightbox)}>حذف</Button>
               </div>
               <div className="tiny dim mono truncate">sha256 {lightbox.sha256.slice(0, 24)}…</div>
             </div>
@@ -181,63 +181,63 @@ export function GalleryPage() {
         />
       ) : null}
 
-      <Modal open={renameOpen} title="Bulk rename" subtitle={`${selected.length} image(s)`} onClose={() => setRenameOpen(false)}
+      <Modal open={renameOpen} title="تغییر نام گروهی" subtitle={`${selected.length} تصویر`} onClose={() => setRenameOpen(false)}
         footer={<>
-          <Button variant="ghost" onClick={() => setRenameOpen(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setRenameOpen(false)}>لغو</Button>
           <Button variant="primary" icon="edit" onClick={async () => {
             try {
               const result = await api.bulkRename(selected, pattern);
-              toast(`${result.renamed} file(s) renamed`, "ok");
+              toast(`${result.renamed} فایل تغییر نام داد`, "ok");
               setRenameOpen(false);
               setSelected([]);
               gallery.refetch();
             } catch (error) { toast(errorText(error), "err"); }
-          }}>Rename files</Button>
+          }}>تغییر نام فایل‌ها</Button>
         </>}
       >
         <div className="field">
-          <span className="field-label">Pattern</span>
+          <span className="field-label">الگو</span>
           <Input value={pattern} onChange={(event) => setPattern(event.target.value)} />
-          <div className="field-hint">Variables: <span className="mono">{"{name}"}</span> original basename, <span className="mono">{"{index}"}</span> sequence, <span className="mono">{"{date}"}</span> creation date. Files are renamed on disk and in the index.</div>
+          <div className="field-hint">متغیرها: <span className="mono">{"{name}"}</span> نام اصلی فایل، <span className="mono">{"{index}"}</span> شماره ترتیب، <span className="mono">{"{date}"}</span> تاریخ ساخت. نام فایل روی دیسک و در فهرست تغییر می‌کند.</div>
         </div>
       </Modal>
 
-      <Modal open={bulkDelete} title="Delete selected images" subtitle={`${selected.length} image(s)`} onClose={() => setBulkDelete(false)}
+      <Modal open={bulkDelete} title="حذف تصاویر انتخاب‌شده" subtitle={`${selected.length} تصویر`} onClose={() => setBulkDelete(false)}
         footer={<>
-          <Button variant="ghost" onClick={() => setBulkDelete(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setBulkDelete(false)}>لغو</Button>
           <Button variant="danger" icon="trash" onClick={async () => {
             try {
               for (const id of selected) await api.imageDelete(id, true);
-              toast(`${selected.length} image(s) deleted`, "ok");
+              toast(`${selected.length} تصویر حذف شد`, "ok");
               setSelected([]);
               setBulkDelete(false);
               gallery.refetch();
             } catch (error) { toast(errorText(error), "err"); }
-          }}>Delete permanently</Button>
+          }}>حذف دائمی</Button>
         </>}
       >
-        <p className="small muted">The files are removed from disk and the index. This cannot be undone; consider exporting first.</p>
+        <p className="small muted">فایل‌ها از دیسک و فهرست حذف می‌شوند و قابل بازگشت نیستند؛ اول خروجی بگیرید.</p>
       </Modal>
 
-      <Modal open={Boolean(deleteTarget)} title="Delete image" onClose={() => setDeleteTarget(null)}
+      <Modal open={Boolean(deleteTarget)} title="حذف تصویر" onClose={() => setDeleteTarget(null)}
         footer={<>
-          <Button variant="ghost" onClick={() => setDeleteTarget(null)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setDeleteTarget(null)}>لغو</Button>
           <Button variant="danger" icon="trash" onClick={async () => {
             if (!deleteTarget) return;
             try {
               await api.imageDelete(deleteTarget.id, true);
-              toast("Image deleted", "ok");
+              toast("تصویر حذف شد", "ok");
               setDeleteTarget(null);
               setLightbox(null);
               gallery.refetch();
             } catch (error) { toast(errorText(error), "err"); }
-          }}>Delete file and record</Button>
+          }}>حذف فایل و رکورد</Button>
         </>}
       >
         <p className="small muted truncate">{deleteTarget?.file_name}</p>
       </Modal>
 
-      <Modal open={dupesOpen} title="Duplicate detection" subtitle="SHA-256 content hashing" onClose={() => setDupesOpen(false)} wide>
+      <Modal open={dupesOpen} title="یافتن فایل‌های تکراری" subtitle="شناسایی محتوای یکسان با کد SHA-256" onClose={() => setDupesOpen(false)} wide>
         <DuplicateList onDone={() => setDupesOpen(false)} />
       </Modal>
     </div>
@@ -255,9 +255,9 @@ function DuplicateList({ onDone }: { onDone: () => void }) {
     return () => { alive = false; };
   }, []);
 
-  if (state.loading) return <Spinner label="Hashing the library…" />;
+  if (state.loading) return <Spinner label="در حال بررسی کتابخانه…" />;
   if (state.error) return <div className="banner err"><Icon name="alert" size={14} /><span>{state.error}</span></div>;
-  if (state.groups.length === 0) return <div className="muted small">No duplicate content found — every file has a unique hash.</div>;
+  if (state.groups.length === 0) return <div className="muted small">فایل تکراری پیدا نشد — همه فایل‌ها کد تأیید متفاوت دارند.</div>;
 
   return (
     <div className="stack">
@@ -265,12 +265,12 @@ function DuplicateList({ onDone }: { onDone: () => void }) {
         <Card key={group.sha256} tight>
           <div className="row between" style={{ marginBottom: 6 }}>
             <span className="mono tiny truncate">{group.sha256.slice(0, 32)}…</span>
-            <Badge tone="warn">{group.copies} copies</Badge>
+            <Badge tone="warn">{group.copies} نسخه</Badge>
           </div>
           <div className="mono-path">{group.paths}</div>
         </Card>
       ))}
-      <Button size="sm" onClick={onDone}>Done</Button>
+      <Button size="sm" onClick={onDone}>تمام</Button>
     </div>
   );
 }

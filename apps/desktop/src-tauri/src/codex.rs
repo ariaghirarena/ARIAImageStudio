@@ -85,7 +85,7 @@ pub fn locate(manual: &str) -> Option<PathBuf> {
         }
     }
     let finder = if cfg!(windows) { "where" } else { "which" };
-    if let Ok(output) = Command::new(finder).arg("codex").output() {
+    if let Ok(output) = crate::sysproc::new(finder).arg("codex").output() {
         if output.status.success() {
             let text = String::from_utf8_lossy(&output.stdout);
             if let Some(first) = text.lines().map(str::trim).find(|l| !l.is_empty()) {
@@ -106,11 +106,11 @@ fn shell_command(exe: &Path) -> Command {
         .map(|e| e.to_string_lossy().to_lowercase())
         .unwrap_or_default();
     if ext == "cmd" || ext == "bat" {
-        let mut cmd = Command::new("cmd");
+        let mut cmd = crate::sysproc::new("cmd");
         cmd.arg("/C").arg(exe);
         cmd
     } else {
-        Command::new(exe)
+        crate::sysproc::new(exe)
     }
 }
 
@@ -418,7 +418,7 @@ fn terminate(child: &mut Child) {
     #[cfg(windows)]
     {
         let pid = child.id();
-        let _ = Command::new("taskkill")
+        let _ = crate::sysproc::new("taskkill")
             .args(["/PID", &pid.to_string(), "/T", "/F"])
             .stdout(Stdio::null())
             .stderr(Stdio::null())
@@ -444,8 +444,8 @@ fn extract_agent_text(event: &Value) -> Option<String> {
 fn render_event(event: &Value) -> Option<String> {
     let event_type = event.get("type")?.as_str()?;
     match event_type {
-        "thread.started" => Some("session started".to_string()),
-        "turn.started" => Some("turn started".to_string()),
+        "thread.started" => Some("نشست شروع شد".to_string()),
+        "turn.started" => Some("پردازش شروع شد".to_string()),
         "turn.completed" => event
             .get("usage")
             .map(|usage| format!("turn completed {}", usage))
@@ -491,7 +491,7 @@ pub fn login_status(codex_home: &Path, manual_path: &str) -> AuthStatus {
         checked_at: crate::db::now(),
     };
     let Some(exe) = locate(manual_path) else {
-        status.detail = "Codex CLI not found".into();
+        status.detail = "ابزار Codex پیدا نشد".into();
         return status;
     };
     let mut cmd = shell_command(&exe);
@@ -514,16 +514,14 @@ pub fn login_status(codex_home: &Path, manual_path: &str) -> AuthStatus {
             } else if lower.contains("api key") {
                 status.mode = "api_key".into();
             }
-            status.detail = text
-                .lines()
-                .map(str::trim)
-                .filter(|l| !l.is_empty())
-                .take(4)
-                .collect::<Vec<_>>()
-                .join(" | ");
+            status.detail = if status.authenticated {
+                "ورود به حساب تأیید شد".into()
+            } else {
+                "ورود به حساب تأیید نشد؛ دوباره وارد شوید یا نصب Codex را بررسی کنید".into()
+            };
         }
         Err(err) => {
-            status.detail = format!("login status check failed: {err}");
+            status.detail = format!("بررسی وضعیت ورود انجام نشد: {err}");
         }
     }
     status

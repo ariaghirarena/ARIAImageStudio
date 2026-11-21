@@ -296,7 +296,7 @@ export function Modal({ open, title, subtitle, children, footer, onClose, wide }
             <div className={styles.modalTitle}>{title}</div>
             {subtitle ? <div className={styles.modalSub}>{subtitle}</div> : null}
           </div>
-          <IconButton icon="close" label="Close" onClick={onClose} />
+          <IconButton icon="close" label="بستن" onClick={onClose} />
         </div>
         {children}
         {footer ? <div className={styles.modalFoot}>{footer}</div> : null}
@@ -316,7 +316,7 @@ export function Toasts({ items, onDismiss }: { items: ToastItem[]; onDismiss: (i
             <Icon name={item.tone === "err" ? "alert" : item.tone === "ok" ? "check" : "info"} size={14} />
           </span>
           <div style={{ flex: 1 }}>{item.text}</div>
-          <button className="ghost" onClick={() => onDismiss(item.id)} aria-label="Dismiss" style={{ background: "none", border: 0, color: "var(--dim)", cursor: "pointer" }}>
+          <button className="ghost" onClick={() => onDismiss(item.id)} aria-label="بستن پیام" style={{ background: "none", border: 0, color: "var(--dim)", cursor: "pointer" }}>
             <Icon name="close" size={12} />
           </button>
         </div>
@@ -340,7 +340,7 @@ export function CodeBlock({ text, maxHeight }: { text: string; maxHeight?: numbe
     <div className={styles.codeBlock}>
       <pre className="code" style={maxHeight ? { maxHeight } : undefined}>{text || "—"}</pre>
       <span className={styles.copyBtn}>
-        <Button size="sm" variant="ghost" icon={copied ? "check" : "copy"} onClick={copy}>{copied ? "Copied" : "Copy"}</Button>
+        <Button size="sm" variant="ghost" icon={copied ? "check" : "copy"} onClick={copy}>{copied ? "کپی شد" : "کپی"}</Button>
       </span>
     </div>
   );
@@ -398,9 +398,9 @@ export function CompareSlider({ beforeSrc, afterSrc, alt }: { beforeSrc: string;
       ref={ref}
       onPointerDown={(event) => { dragging.current = true; move(event.clientX); }}
     >
-      <img src={beforeSrc} alt={alt ? `${alt} (before)` : "before"} draggable={false} />
-      <div className="after" style={{ clipPath: `inset(0 0 0 ${position}%)` }}>
-        <img src={afterSrc} alt={alt ? `${alt} (after)` : "after"} draggable={false} />
+      <img src={beforeSrc} alt={alt ? `${alt} (before)` : "قبل"} draggable={false} />
+      <div className="بعد" style={{ clipPath: `inset(0 0 0 ${position}%)` }}>
+        <img src={afterSrc} alt={alt ? `${alt} (after)` : "بعد"} draggable={false} />
       </div>
       <div className="compare-handle" style={{ left: `${position}%` }} />
     </div>
@@ -457,17 +457,17 @@ export function Lightbox({
           style={{ transform: `translate(${offset.x}px, ${offset.y}px) scale(${zoom})`, transition: drag.current ? "none" : "transform .18s var(--ease)", maxHeight: "92vh" }}
         />
         <div style={{ position: "absolute", inset: "16px 16px auto auto", display: "flex", gap: 6 }}>
-          <Button size="sm" variant="ghost" icon="refresh" onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}>Reset</Button>
-          <Button size="sm" variant="ghost" icon="close" onClick={onClose}>Close</Button>
+          <Button size="sm" variant="ghost" icon="refresh" onClick={() => { setZoom(1); setOffset({ x: 0, y: 0 }); }}>بازنشانی</Button>
+          <Button size="sm" variant="ghost" icon="close" onClick={onClose}>بستن</Button>
         </div>
         <div style={{ position: "absolute", inset: "auto auto 12px 16px", fontSize: 11, color: "var(--muted)", fontFamily: "var(--mono)" }}>
-          {Math.round(zoom * 100)}% · drag to pan · wheel to zoom
+          {Math.round(zoom * 100)}٪ · برای جابه‌جایی بکشید و برای بزرگ‌نمایی از چرخ ماوس استفاده کنید
         </div>
       </div>
       <aside className="lightbox-side">
         <div className="row between" style={{ marginBottom: 10 }}>
           <h3 style={{ fontSize: 14 }} className="truncate">{title}</h3>
-          <IconButton icon="close" label="Close lightbox" onClick={onClose} />
+          <IconButton icon="close" label="بستن نمایش تصویر" onClick={onClose} />
         </div>
         {subtitle ? <div className="muted small" style={{ marginBottom: 12 }}>{subtitle}</div> : null}
         {side}
@@ -543,8 +543,8 @@ export function FilePickerModal({
     <Modal open={open} title={title} subtitle={subtitle} onClose={onClose} wide
       footer={
         <>
-          <Button variant="ghost" onClick={onClose}>Cancel</Button>
-          {mode === "dir" ? <Button variant="primary" icon="check" onClick={accept} disabled={!path}>Use this folder</Button> : null}
+          <Button variant="ghost" onClick={onClose}>لغو</Button>
+          {mode === "dir" ? <Button variant="primary" icon="check" onClick={accept} disabled={!path}>انتخاب این پوشه</Button> : null}
         </>
       }
     >
@@ -555,14 +555,14 @@ export function FilePickerModal({
       </div>
       <div className="row" style={{ marginBottom: 10 }}>
         <Input value={path} onChange={(event) => setPath(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") void load(path); }} />
-        <Button icon="refresh" onClick={() => void load(path)}>Go</Button>
+        <Button icon="refresh" onClick={() => void load(path)}>رفتن</Button>
       </div>
       {listing && listing.parent ? (
-        <Button size="sm" variant="ghost" icon="chevronLeft" onClick={() => void load(listing.parent)}>Up</Button>
+        <Button size="sm" variant="ghost" icon="chevronLeft" onClick={() => void load(listing.parent)}>پوشه بالاتر</Button>
       ) : null}
       {error ? <div className="chip err" style={{ marginTop: 8 }}>{error}</div> : null}
       <div style={{ maxHeight: 320, overflow: "auto", marginTop: 10, border: "1px solid var(--line)", borderRadius: 10 }}>
-        {loading ? <div className="row" style={{ padding: 14 }}><Spinner label="Reading folder…" /></div> : null}
+        {loading ? <div className="row" style={{ padding: 14 }}><Spinner label="در حال خواندن پوشه…" /></div> : null}
         {listing?.dirs.map((entry) => (
           <div key={entry.path} className="list-row" style={{ padding: "8px 10px", cursor: "pointer" }} onClick={() => void load(entry.path)}>
             <Icon name="folder" size={14} />
@@ -587,10 +587,10 @@ export function FilePickerModal({
             <span className="mono dim">{(entry.size / 1024).toFixed(0)} KB</span>
           </div>
         ))}
-        {listing && listing.count === 0 && !loading ? <div className="muted small" style={{ padding: 14 }}>This folder is empty.</div> : null}
+        {listing && listing.count === 0 && !loading ? <div className="muted small" style={{ padding: 14 }}>این پوشه خالی است.</div> : null}
       </div>
       <div className="row" style={{ marginTop: 10 }}>
-        <Input placeholder="Or type a full path…" value={manual} onChange={(event) => setManual(event.target.value)} />
+        <Input placeholder="یا مسیر کامل را بنویسید…" value={manual} onChange={(event) => setManual(event.target.value)} />
         <Button
           onClick={() => {
             const target = manual.trim();
@@ -598,7 +598,7 @@ export function FilePickerModal({
             if (mode === "file") { onPick?.(target); onClose(); } else { void load(target); }
           }}
         >
-          Use path
+          استفاده از مسیر
         </Button>
       </div>
     </Modal>

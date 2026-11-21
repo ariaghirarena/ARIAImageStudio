@@ -77,7 +77,7 @@ export function App() {
     "shift+?": () => useApp.getState().setHelp(true),
   });
 
-  if (booting) return <LoadingScreen label="Loading ARIA Image Studio…" />;
+  if (booting) return <LoadingScreen label="در حال آماده‌سازی استودیو آریا…" />;
 
   if (bootError) {
     return (

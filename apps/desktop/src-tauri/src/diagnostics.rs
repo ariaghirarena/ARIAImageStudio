@@ -60,56 +60,56 @@ pub fn run_all(paths: &AppPaths, settings: &Settings, db: &Connection) -> Value 
     if info.found {
         checks.push(check(
             "codex_installed",
-            "Codex CLI",
+            "ابزار Codex",
             "ok",
-            format!("{} ({})", if info.version.is_empty() { "version unknown" } else { &info.version }, info.path),
+            format!("{} ({})", if info.version.is_empty() { "نسخه نامشخص" } else { &info.version }, info.path),
             "",
         ));
     } else {
         checks.push(check(
             "codex_installed",
-            "Codex CLI",
+            "ابزار Codex",
             "error",
-            "The official Codex CLI was not found",
-            "Run: npm install -g @openai/codex, then use Rescan or set the codex.exe path in Settings.",
+            "ابزار رسمی Codex پیدا نشد",
+            "برای نصب، npm install -g @openai/codex را اجرا کنید؛ سپس بررسی دوباره را بزنید یا مسیر را در تنظیمات مشخص کنید.",
         ));
     }
 
     let has_auth = home.join("auth.json").is_file();
     checks.push(check(
         "auth_present",
-        "Codex credentials",
+        "اطلاعات ورود Codex",
         if has_auth { "ok" } else { "error" },
-        if has_auth { "ARIA-owned CODEX_HOME contains credentials" } else { "No credentials in the ARIA CODEX_HOME" },
-        if has_auth { "" } else { "Import auth.json in Authentication, or sign in with ChatGPT." },
+        if has_auth { "فایل اطلاعات ورود در پوشه اختصاصی ARIA موجود است" } else { "فایل اطلاعات ورود در پوشه اختصاصی ARIA نیست" },
+        if has_auth { "" } else { "در بخش ورود به حساب، فایل auth.json را وارد کنید یا با ChatGPT وارد شوید." },
     ));
 
     if info.found && has_auth {
         let status = codex::login_status(&home, &settings.codex_path);
         checks.push(check(
             "login_status",
-            "Session status",
+            "وضعیت نشست",
             if status.authenticated { "ok" } else { "warn" },
             status.detail.clone(),
-            if status.authenticated { "" } else { "Run `codex login status` diagnostics, or sign in again." },
+            if status.authenticated { "" } else { "وضعیت ورود را بررسی کنید یا دوباره وارد شوید." },
         ));
     }
 
     checks.push(check(
         "imagegen_skill",
-        "Image generation skill",
+        "مهارت تصویرسازی",
         if info.skill_present { "ok" } else { "warn" },
-        if info.skill_present { "An image_gen skill is installed in the ARIA CODEX_HOME" } else { "No image_gen skill found in the ARIA CODEX_HOME" },
-        if info.skill_present { "" } else { "Use Install skill on the AI Engine page (the built-in image_gen tool itself is provided by Codex, not by the skill)." },
+        if info.skill_present { "مهارت تصویرسازی در پوشه اختصاصی ARIA نصب شده است" } else { "مهارت تصویرسازی در پوشه اختصاصی ARIA پیدا نشد" },
+        if info.skill_present { "" } else { "در صفحه موتور، نصب مهارت را بزنید. خود ابزار تصویرسازی از Codex می‌آید، نه از مهارت." },
     ));
 
     let generated = home.join("generated_images");
     checks.push(check(
         "generated_dir",
-        "Generated image directory",
+        "پوشه تصاویر ساخته‌شده",
         if generated.is_dir() { "ok" } else { "warn" },
         generated.to_string_lossy(),
-        if generated.is_dir() { "" } else { "The folder appears after the first successful generation." },
+        if generated.is_dir() { "" } else { "این پوشه پس از اولین تولید موفق ساخته می‌شود." },
     ));
 
     let out = if settings.output_root.trim().is_empty() {
@@ -119,10 +119,10 @@ pub fn run_all(paths: &AppPaths, settings: &Settings, db: &Connection) -> Value 
     };
     checks.push(check(
         "output_dir",
-        "Output directory",
+        "پوشه خروجی",
         if out.is_dir() { "ok" } else { "warn" },
         out.to_string_lossy(),
-        if out.is_dir() { "" } else { "Choose an existing output folder in Preferences." },
+        if out.is_dir() { "" } else { "در تنظیمات برنامه یک پوشه خروجی موجود انتخاب کنید." },
     ));
 
     match disk_free_bytes(&paths.root) {
@@ -130,30 +130,30 @@ pub fn run_all(paths: &AppPaths, settings: &Settings, db: &Connection) -> Value 
             let gb = free as f64 / 1024.0 / 1024.0 / 1024.0;
             checks.push(check(
                 "disk_space",
-                "Free disk space",
+                "فضای آزاد دیسک",
                 if gb < 1.0 { "error" } else if gb < 5.0 { "warn" } else { "ok" },
-                format!("{gb:.1} GB available"),
-                if gb < 5.0 { "Free up space before large batches." } else { "" },
+                format!("{gb:.1} گیگابایت آزاد"),
+                if gb < 5.0 { "پیش از تولید گروهی، فضای دیسک آزاد کنید." } else { "" },
             ));
         }
-        None => checks.push(check("disk_space", "Free disk space", "unknown", "Not reported on this platform", "")),
+        None => checks.push(check("disk_space", "فضای آزاد دیسک", "unknown", "در این سیستم‌عامل گزارش نمی‌شود", "")),
     }
 
     let db_ok = db::count(db, "SELECT COUNT(*) FROM sqlite_master", &[]).is_ok();
     checks.push(check(
         "database",
-        "Database",
+        "پایگاه داده",
         if db_ok { "ok" } else { "error" },
         paths.db.to_string_lossy(),
-        if db_ok { "" } else { "Delete the Database folder to rebuild; projects images stay on disk." },
+        if db_ok { "" } else { "ابتدا از داده‌ها پشتیبان بگیرید و گزارش عیب‌یابی را بررسی کنید؛ پوشه پایگاه داده را بدون پشتیبان حذف نکنید." },
     ));
 
     let pending = db::count(db, "SELECT COUNT(*) FROM jobs WHERE status IN ('queued','running')", &[]).unwrap_or(0);
     checks.push(check(
         "queue",
-        "Queue",
+        "صف تولید",
         "ok",
-        format!("{pending} job(s) pending or running"),
+        format!("{pending} کار در انتظار یا در حال اجرا"),
         "",
     ));
 

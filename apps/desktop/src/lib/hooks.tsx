@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api, type GalleryQuery } from "@aria/core";
+import { api, errorText, type GalleryQuery } from "@aria/core";
 import { useApp } from "../store";
 
 export function useProjects() {
@@ -75,9 +75,7 @@ export function useAction<TArgs extends unknown[], TResult>(
       options?.onDone?.(result);
     },
     onError: (error) => {
-      const message = typeof error === "object" && error && "message" in error ? String((error as { message: string }).message) : String(error);
-      const hint = typeof error === "object" && error && "hint" in error ? String((error as { hint?: string }).hint ?? "") : "";
-      toast(hint ? `${message} — ${hint}` : message, "err");
+      toast(errorText(error), "err");
     },
   });
 }

@@ -14,12 +14,12 @@ fn http_get(url: &str) -> Option<String> {
     let attempts: Vec<Command> = if cfg!(windows) {
         vec![
             {
-                let mut c = Command::new("curl.exe");
+                let mut c = crate::sysproc::new("curl.exe");
                 c.args(["-sL", "--max-time", "12", "-H", "User-Agent: ARIA-Image-Studio", url]);
                 c
             },
             {
-                let mut c = Command::new("powershell");
+                let mut c = crate::sysproc::new("powershell");
                 let script = format!(
                     "(Invoke-WebRequest -UseBasicParsing -Uri '{}' -Headers @{{'User-Agent'='ARIA-Image-Studio'}}).Content",
                     url
@@ -30,7 +30,7 @@ fn http_get(url: &str) -> Option<String> {
         ]
     } else {
         vec![{
-            let mut c = Command::new("curl");
+            let mut c = crate::sysproc::new("curl");
             c.args(["-sL", "--max-time", "12", "-H", "User-Agent: ARIA-Image-Studio", url]);
             c
         }]

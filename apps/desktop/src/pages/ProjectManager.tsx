@@ -1,3 +1,4 @@
+import { faLabel } from "@aria/core";
 import { useMemo, useState } from "react";
 import { Badge, Button, Card, EmptyState, Icon, Input, Modal, Spinner, Textarea, Toggle } from "@aria/ui";
 import { api, errorText, formatDate, toFileUrl, type Project } from "@aria/core";
@@ -35,29 +36,29 @@ export function ProjectsPage() {
   const gallery = useGallery({ project_id: selected?.id ?? "", limit: 8, sort: "newest" });
 
   const create = useAction((projectName: string, projectDescription: string) => api.projectCreate(projectName, projectDescription), {
-    success: "Project created with its folder structure",
+    success: "پروژه و پوشه‌های آن ساخته شد",
     onDone: () => { setCreating(false); setName(""); setDescription(""); projects.refetch(); },
   });
 
   const update = useAction((project: Project) => api.projectUpdate(project.id, project.name, project.description, project.output_dir), {
-    success: "Project updated",
+    success: "پروژه به‌روز شد",
     onDone: () => { setEditing(null); projects.refetch(); void refresh(); },
   });
 
   const backup = useAction((id: string) => api.projectBackup(id), {
-    success: (result) => `Backup written: ${result.files} file(s)`,
+    success: (result) => `پشتیبان ساخته شد: ${result.files} فایل`,
   });
 
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Projects"
-        description="A project owns a folder tree, its references, prompts and outputs. ARIA only deletes files you explicitly confirm."
+        title="پروژه‌ها"
+        description="هر پروژه پوشه‌ها، مرجع‌ها، پرامپت‌ها و خروجی‌های خودش را دارد. حذف فایل فقط با تأیید صریح شما انجام می‌شود."
         actions={
           <>
-            <Button icon="refresh" onClick={() => projects.refetch()}>Refresh</Button>
-            <Button icon="download" onClick={() => setRestoreOpen(true)}>Restore backup</Button>
-            <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>New project</Button>
+            <Button icon="refresh" onClick={() => projects.refetch()}>تازه‌سازی</Button>
+            <Button icon="download" onClick={() => setRestoreOpen(true)}>بازیابی پشتیبان</Button>
+            <Button variant="primary" icon="plus" onClick={() => setCreating(true)}>پروژه جدید</Button>
           </>
         }
       />
@@ -65,15 +66,15 @@ export function ProjectsPage() {
       <div className="grid split-left">
         <Card>
           <div className="section-title">
-            <h2>All projects</h2>
+            <h2>همه پروژه‌ها</h2>
             <div className="row" style={{ gap: 8 }}>
-              <Toggle checked={showArchived} onChange={setShowArchived} label="Show archived" />
-              <span className="tiny muted">archived</span>
+              <Toggle checked={showArchived} onChange={setShowArchived} label="نمایش بایگانی‌شده‌ها" />
+              <span className="tiny muted">بایگانی‌شده</span>
             </div>
           </div>
-          {projects.isLoading ? <Spinner label="Loading projects…" /> : null}
+          {projects.isLoading ? <Spinner label="در حال بارگذاری پروژه‌ها…" /> : null}
           {list.length === 0 && !projects.isLoading ? (
-            <EmptyState icon="folder" title="No projects" description="Create one to group references, prompts and generated images under a single folder." />
+            <EmptyState icon="folder" title="پروژه‌ای نیست" description="برای قراردادن مرجع‌ها، توضیحات و تصاویر در یک پوشه، پروژه بسازید." />
           ) : null}
           <div className="list">
             {list.map((project) => (
@@ -81,10 +82,10 @@ export function ProjectsPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div className="row" style={{ gap: 6 }}>
                     <span className="small strong truncate">{project.name}</span>
-                    {project.id === activeId ? <Badge tone="accent">active</Badge> : null}
-                    {project.archived ? <Badge>archived</Badge> : null}
+                    {project.id === activeId ? <Badge tone="accent">فعال</Badge> : null}
+                    {project.archived ? <Badge>بایگانی‌شده</Badge> : null}
                   </div>
-                  <div className="tiny muted truncate">{project.description || "no description"}</div>
+                  <div className="tiny muted truncate">{project.description || "بدون توضیح"}</div>
                   <div className="tiny dim">{formatDate(project.created_at)}</div>
                 </div>
                 <Icon name="chevronRight" size={13} />
@@ -102,65 +103,65 @@ export function ProjectsPage() {
                   <div className="row" style={{ gap: 6 }}>
                     {selected.id !== activeId ? (
                       <Button size="sm" icon="check" onClick={async () => {
-                        try { await saveSettings({ active_project_id: selected.id }); toast("Active project switched", "ok"); projects.refetch(); }
+                        try { await saveSettings({ active_project_id: selected.id }); toast("پروژه فعال تغییر کرد", "ok"); projects.refetch(); }
                         catch (error) { toast(errorText(error), "err"); }
-                      }}>Set active</Button>
-                    ) : <Badge tone="accent">active project</Badge>}
-                    <Button size="sm" icon="edit" onClick={() => setEditing(selected)}>Edit</Button>
-                    <Button size="sm" icon="download" loading={backup.isPending} onClick={() => backup.mutate([selected.id])}>Backup</Button>
-                    <Button size="sm" icon="folder" onClick={() => void api.openPath(selected.dir || selected.output_dir).catch(() => undefined)}>Open folder</Button>
-                    <Button size="sm" variant="ghost" icon="archive" onClick={() => setArchiving(selected)}>{selected.archived ? "Unarchive" : "Archive"}</Button>
+                      }}>فعال‌کردن پروژه</Button>
+                    ) : <Badge tone="accent">پروژه فعال</Badge>}
+                    <Button size="sm" icon="edit" onClick={() => setEditing(selected)}>ویرایش</Button>
+                    <Button size="sm" icon="download" loading={backup.isPending} onClick={() => backup.mutate([selected.id])}>پشتیبان‌گیری</Button>
+                    <Button size="sm" icon="folder" onClick={() => void api.openPath(selected.dir || selected.output_dir).catch(() => undefined)}>بازکردن پوشه</Button>
+                    <Button size="sm" variant="ghost" icon="archive" onClick={() => setArchiving(selected)}>{selected.archived ? "خارج‌کردن از بایگانی" : "بایگانی"}</Button>
                   </div>
                 </div>
-                <p className="muted small" style={{ marginTop: 0 }}>{selected.description || "No description yet — use Edit to describe the project's purpose."}</p>
+                <p className="muted small" style={{ marginTop: 0 }}>{selected.description || "توضیحی نیست؛ از دکمه ویرایش برای شرح هدف پروژه استفاده کنید."}</p>
                 <div className="grid cols-4">
-                  <div><div className="tiny muted">Images</div><div className="strong">{selected.image_count}</div></div>
-                  <div><div className="tiny muted">References</div><div className="strong">{references.data?.length ?? 0}</div></div>
-                  <div><div className="tiny muted">Jobs</div><div className="strong">{selected.job_count}</div></div>
-                  <div><div className="tiny muted">Created</div><div className="strong small">{formatDate(selected.created_at)}</div></div>
+                  <div><div className="tiny muted">تصاویر</div><div className="strong">{selected.image_count}</div></div>
+                  <div><div className="tiny muted">مرجع‌ها</div><div className="strong">{references.data?.length ?? 0}</div></div>
+                  <div><div className="tiny muted">کارهای صف</div><div className="strong">{selected.job_count}</div></div>
+                  <div><div className="tiny muted">تاریخ ساخت</div><div className="strong small">{formatDate(selected.created_at)}</div></div>
                 </div>
                 <div className="divider" style={{ margin: "12px 0" }} />
-                <div className="tiny muted">Output folder</div>
+                <div className="tiny muted">پوشه خروجی</div>
                 <div className="mono-path">{selected.output_dir || selected.dir}</div>
               </Card>
 
               <Card>
-                <div className="section-title"><h2>References</h2><span>{references.data?.length ?? 0} asset(s)</span></div>
+                <div className="section-title"><h2>مرجع‌ها</h2><span>{references.data?.length ?? 0} فایل</span></div>
                 <div className="grid cols-3" style={{ marginBottom: 10 }}>
                   <div style={{ gridColumn: "span 2" }}>
-                    <PickerField label="Add a reference image" mode="file" value={refPath} onChange={setRefPath} filter={(entry) => entry.is_image} />
+                    <PickerField label="افزودن تصویر مرجع" mode="file" value={refPath} onChange={setRefPath} filter={(entry) => entry.is_image} />
                   </div>
                   <div className="field">
-                    <span className="field-label">Role</span>
-                    <Input value={refRole} onChange={(event) => setRefRole(event.target.value)} placeholder="style, subject, product" />
+                    <span className="field-label">نقش مرجع</span>
+                    <Input value={refRole} onChange={(event) => setRefRole(event.target.value)} placeholder="سبک، موضوع، محصول" />
                   </div>
                 </div>
                 <Button size="sm" icon="plus" disabled={!refPath} onClick={async () => {
                   try {
                     await api.referenceAdd(refPath, selected.id, refRole || "reference");
-                    toast("Reference copied into the project", "ok");
+                    toast("تصویر مرجع در پروژه کپی شد", "ok");
                     setRefPath("");
                     references.refetch();
                     projects.refetch();
                   } catch (error) { toast(errorText(error), "err"); }
-                }}>Add reference</Button>
+                }}>افزودن مرجع</Button>
                 <div className="gallery-grid" style={{ marginTop: 12 }}>
                   {references.data?.map((reference) => (
                     <div key={reference.id} className="thumb">
-                      <img src={toFileUrl(reference.thumb_path || reference.path)} alt={reference.role} loading="lazy" />
-                      <div className="thumb-meta"><span className="truncate">{reference.role}</span><span className="mono">{reference.width}×{reference.height}</span></div>
-                      <button className="thumb-select" aria-label="Remove reference" onClick={async () => {
-                        try { await api.referenceDelete(reference.id); toast("Reference removed", "ok"); references.refetch(); }
+                      <img src={toFileUrl(reference.thumb_path || reference.path)} alt={faLabel(reference.role)} loading="lazy" />
+                      <div className="thumb-meta"><span className="truncate">{faLabel(reference.role)}</span><span className="mono">{reference.width}×{reference.height}</span></div>
+                      <button className="thumb-select" aria-label="حذف مرجع" onClick={async () => {
+                        try { await api.referenceDelete(reference.id); toast("مرجع حذف شد", "ok"); references.refetch(); }
                         catch (error) { toast(errorText(error), "err"); }
                       }}><Icon name="close" size={11} /></button>
                     </div>
                   ))}
                 </div>
-                {references.data && references.data.length === 0 ? <div className="muted small">No references yet. Reference images are passed to Codex as input images.</div> : null}
+                {references.data && references.data.length === 0 ? <div className="muted small">هنوز مرجعی نیست. تصاویر مرجع همراه ورودی برای Codex فرستاده می‌شوند.</div> : null}
               </Card>
 
               <Card>
-                <div className="section-title"><h2>Recent images</h2><Button size="sm" variant="ghost" icon="chevronRight" onClick={() => setRoute("gallery")}>Gallery</Button></div>
+                <div className="section-title"><h2>تصاویر اخیر</h2><Button size="sm" variant="ghost" icon="chevronRight" onClick={() => setRoute("gallery")}>گالری</Button></div>
                 <div className="gallery-grid">
                   {gallery.data?.items.map((image) => (
                     <div key={image.id} className="thumb" onClick={() => { useApp.getState().setHandoff({ imageId: image.id, imagePath: image.path }); setRoute("edit"); }} role="button" tabIndex={0}>
@@ -169,79 +170,79 @@ export function ProjectsPage() {
                     </div>
                   ))}
                 </div>
-                {gallery.data && gallery.data.items.length === 0 ? <div className="muted small">Nothing generated in this project yet.</div> : null}
+                {gallery.data && gallery.data.items.length === 0 ? <div className="muted small">هنوز در این پروژه تصویری ساخته نشده است.</div> : null}
               </Card>
             </>
-          ) : <Card><div className="muted small">Select a project.</div></Card>}
+          ) : <Card><div className="muted small">یک پروژه انتخاب کنید.</div></Card>}
         </div>
       </div>
 
-      <Modal open={creating} title="New project" subtitle="Creates the folder tree on disk" onClose={() => setCreating(false)}
+      <Modal open={creating} title="پروژه جدید" subtitle="پوشه‌های پروژه روی دیسک ساخته می‌شود" onClose={() => setCreating(false)}
         footer={<>
-          <Button variant="ghost" onClick={() => setCreating(false)}>Cancel</Button>
-          <Button variant="primary" loading={create.isPending} disabled={!name.trim()} onClick={() => create.mutate([name, description])}>Create</Button>
+          <Button variant="ghost" onClick={() => setCreating(false)}>لغو</Button>
+          <Button variant="primary" loading={create.isPending} disabled={!name.trim()} onClick={() => create.mutate([name, description])}>ساختن</Button>
         </>}
       >
         <div className="stack">
-          <div className="field"><span className="field-label">Name</span><Input value={name} onChange={(event) => setName(event.target.value)} placeholder="Autumn campaign" /></div>
-          <div className="field"><span className="field-label">Description</span><Textarea value={description} onChange={(event) => setDescription(event.target.value)} style={{ minHeight: 70 }} /></div>
-          <div className="field-hint">Folders created: Inputs, References, Generated, Variations, Edited, Exports.</div>
+          <div className="field"><span className="field-label">نام</span><Input value={name} onChange={(event) => setName(event.target.value)} placeholder="کارزار پاییزی" /></div>
+          <div className="field"><span className="field-label">توضیحات</span><Textarea value={description} onChange={(event) => setDescription(event.target.value)} style={{ minHeight: 70 }} /></div>
+          <div className="field-hint">پوشه‌های ورودی، مرجع، تصاویر ساخته‌شده، نسخه‌ها، ویرایش‌ها و خروجی‌ها ساخته می‌شوند.</div>
         </div>
       </Modal>
 
-      <Modal open={Boolean(editing)} title="Edit project" onClose={() => setEditing(null)}
+      <Modal open={Boolean(editing)} title="ویرایش پروژه" onClose={() => setEditing(null)}
         footer={<>
-          <Button variant="ghost" onClick={() => setEditing(null)}>Cancel</Button>
-          <Button variant="primary" loading={update.isPending} onClick={() => { if (editing) update.mutate([editing]); }}>Save</Button>
+          <Button variant="ghost" onClick={() => setEditing(null)}>لغو</Button>
+          <Button variant="primary" loading={update.isPending} onClick={() => { if (editing) update.mutate([editing]); }}>ذخیره</Button>
         </>}
       >
         {editing ? (
           <div className="stack">
-            <div className="field"><span className="field-label">Name</span><Input value={editing.name} onChange={(event) => setEditing({ ...editing, name: event.target.value })} /></div>
-            <div className="field"><span className="field-label">Description</span><Textarea value={editing.description} onChange={(event) => setEditing({ ...editing, description: event.target.value })} style={{ minHeight: 70 }} /></div>
-            <div className="field"><span className="field-label">Output folder override</span><Input value={editing.output_dir} onChange={(event) => setEditing({ ...editing, output_dir: event.target.value })} placeholder="Defaults to the project Generated folder" /></div>
+            <div className="field"><span className="field-label">نام</span><Input value={editing.name} onChange={(event) => setEditing({ ...editing, name: event.target.value })} /></div>
+            <div className="field"><span className="field-label">توضیحات</span><Textarea value={editing.description} onChange={(event) => setEditing({ ...editing, description: event.target.value })} style={{ minHeight: 70 }} /></div>
+            <div className="field"><span className="field-label">پوشه خروجی دلخواه</span><Input value={editing.output_dir} onChange={(event) => setEditing({ ...editing, output_dir: event.target.value })} placeholder="پیش‌فرض: پوشه تصاویر ساخته‌شده پروژه" /></div>
           </div>
         ) : null}
       </Modal>
 
-      <Modal open={Boolean(archiving)} title={archiving?.archived ? "Unarchive project" : "Archive project"} onClose={() => setArchiving(null)}
+      <Modal open={Boolean(archiving)} title={archiving?.archived ? "خارج‌کردن پروژه از بایگانی" : "بایگانی پروژه"} onClose={() => setArchiving(null)}
         footer={<>
-          <Button variant="ghost" onClick={() => setArchiving(null)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setArchiving(null)}>لغو</Button>
           <Button variant="primary" onClick={async () => {
             if (!archiving) return;
             try {
               await api.projectArchive(archiving.id, !archiving.archived);
-              toast(archiving.archived ? "Project restored" : "Project archived", "ok");
+              toast(archiving.archived ? "پروژه بازیابی شد" : "پروژه بایگانی شد", "ok");
               setArchiving(null);
               projects.refetch();
             } catch (error) { toast(errorText(error), "err"); }
-          }}>{archiving?.archived ? "Unarchive" : "Archive"}</Button>
+          }}>{archiving?.archived ? "خارج‌کردن از بایگانی" : "بایگانی"}</Button>
         </>}
       >
         <p className="small muted">
           {archiving?.archived
-            ? "The project becomes visible and selectable again. No files are touched."
-            : "Archiving hides the project from pickers but never deletes files. You can restore it later."}
+            ? "پروژه دوباره نمایش داده می‌شود و قابل انتخاب است؛ فایل‌ها تغییر نمی‌کنند."
+            : "بایگانی پروژه را از فهرست انتخاب پنهان می‌کند و فایلی حذف نمی‌شود؛ بعداً می‌توانید آن را برگردانید."}
         </p>
       </Modal>
 
-      <Modal open={restoreOpen} title="Restore project backup" subtitle="Copies a backup folder into a new project" onClose={() => setRestoreOpen(false)}
+      <Modal open={restoreOpen} title="بازیابی پشتیبان پروژه" subtitle="محتوای پشتیبان در پروژه جدید کپی می‌شود" onClose={() => setRestoreOpen(false)}
         footer={<>
-          <Button variant="ghost" onClick={() => setRestoreOpen(false)}>Cancel</Button>
+          <Button variant="ghost" onClick={() => setRestoreOpen(false)}>لغو</Button>
           <Button variant="primary" disabled={!restorePath} onClick={async () => {
             try {
               const result = await api.projectRestore(restorePath);
-              toast(`Restored ${result.files} file(s) into ${result.restored_into}`, "ok");
+              toast(`${result.files} فایل در ${result.restored_into} بازیابی شد`, "ok");
               setRestoreOpen(false);
               setRestorePath("");
               projects.refetch();
             } catch (error) { toast(errorText(error), "err"); }
-          }}>Restore</Button>
+          }}>بازیابی</Button>
         </>}
       >
-        <PickerField label="Backup folder" mode="dir" value={restorePath} onChange={setRestorePath} />
+        <PickerField label="پوشه پشتیبان" mode="dir" value={restorePath} onChange={setRestorePath} />
         <p className="muted tiny" style={{ marginTop: 10 }}>
-          Backups live under <span className="mono">{boot?.paths.backups ?? "%LOCALAPPDATA%\\ARIA\\ImageStudio\\Backups"}</span>. Restoring never overwrites an existing project.
+          پشتیبان‌ها در این مسیر هستند: <span className="mono">{boot?.paths.backups ?? "%LOCALAPPDATA%\\ARIA\\ImageStudio\\Backups"}</span>. بازیابی هیچ پروژه موجودی را بازنویسی نمی‌کند.
         </p>
       </Modal>
     </div>

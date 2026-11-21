@@ -19,3 +19,6 @@ Thumbs.db
 # test output
 coverage/
 .vitest/
+
+# incremental compiler metadata
+*.tsbuildinfo

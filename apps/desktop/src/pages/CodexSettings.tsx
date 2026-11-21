@@ -32,14 +32,14 @@ export function CodexSettingsPage() {
   }, [config.data]);
 
   const installSkill = useAction(() => api.codexInstallSkill(), {
-    success: "imagegen skill installed",
+    success: "مهارت تصویرسازی نصب شد",
     onDone: () => void refresh(),
   });
 
   const save = async () => {
     try {
       const result = await api.codexConfigWrite(content);
-      toast(`config.toml written (${result.path})`, "ok");
+      toast(`تنظیمات ذخیره شد (${result.path})`, "ok");
       setConfirmOpen(false);
       config.refetch();
     } catch (error) {
@@ -52,13 +52,13 @@ export function CodexSettingsPage() {
   return (
     <div className="page fade-in">
       <PageHeader
-        title="Codex Configuration"
-        description="A per-profile config.toml. ARIA backs it up before every write and never edits your personal ~/.codex."
+        title="تنظیمات Codex"
+        description="هر حساب فایل تنظیمات جدا دارد. قبل از ذخیره، پشتیبان گرفته می‌شود و تنظیمات شخصی Codex شما تغییر نمی‌کند."
         actions={
           <>
-            <Button icon="refresh" onClick={() => config.refetch()}>Reload</Button>
-            <Button icon="file" onClick={() => setContent((current) => (current.trim() ? current : TEMPLATE))}>Insert template</Button>
-            <Button variant="primary" icon="save" disabled={!dirty} onClick={() => setConfirmOpen(true)}>Write config.toml</Button>
+            <Button icon="refresh" onClick={() => config.refetch()}>خواندن دوباره</Button>
+            <Button icon="file" onClick={() => setContent((current) => (current.trim() ? current : TEMPLATE))}>درج نمونه تنظیمات</Button>
+            <Button variant="primary" icon="save" disabled={!dirty} onClick={() => setConfirmOpen(true)}>ذخیره فایل config.toml</Button>
           </>
         }
       />
@@ -67,9 +67,9 @@ export function CodexSettingsPage() {
         <Card>
           <div className="section-title">
             <h2>config.toml</h2>
-            <Badge tone={config.data?.exists ? "ok" : "warn"}>{config.data?.exists ? "exists" : "not created yet"}</Badge>
+            <Badge tone={config.data?.exists ? "ok" : "warn"}>{config.data?.exists ? "موجود است" : "هنوز ساخته نشده"}</Badge>
           </div>
-          {config.isLoading ? <Spinner label="Reading config…" /> : null}
+          {config.isLoading ? <Spinner label="در حال خواندن تنظیمات…" /> : null}
           {config.isError ? <div className="banner err"><Icon name="alert" size={14} /><span>{errorText(config.error)}</span></div> : null}
           <Textarea
             value={content}
@@ -81,39 +81,38 @@ export function CodexSettingsPage() {
           <div className="row wrap" style={{ marginTop: 10 }}>
             <span className="mono-path">{loadedPath || boot?.paths.codex_home}</span>
             <span className="spacer" />
-            {dirty ? <Badge tone="warn">unsaved changes</Badge> : <Badge tone="ok">in sync</Badge>}
+            {dirty ? <Badge tone="warn">تغییرات ذخیره‌نشده</Badge> : <Badge tone="ok">ذخیره‌شده</Badge>}
           </div>
         </Card>
 
         <div className="stack">
           <Card>
-            <div className="section-title"><h2>Safety</h2></div>
+            <div className="section-title"><h2>ایمنی</h2></div>
             <ul className="small muted" style={{ margin: 0, paddingInlineStart: 18, lineHeight: 1.8 }}>
-              <li>The previous file is copied to <span className="mono">Backups/</span> before each write.</li>
-              <li>Writes are atomic (temp file + rename).</li>
-              <li>Comments and unknown keys are preserved as typed.</li>
-              <li>Invalid TOML is reported by Codex on the next run, not swallowed.</li>
+              <li>پیش از هر ذخیره، نسخه قبلی در <span className="mono">Backups/</span> کپی می‌شود.</li>
+              <li>فایل ابتدا موقت نوشته و سپس جایگزین می‌شود.</li>
+              <li>توضیحات و کلیدهای ناشناخته همان‌طور که نوشته‌اید حفظ می‌شوند.</li>
+              <li>اگر ساختار TOML اشتباه باشد، Codex در اجرای بعد خطا می‌دهد.</li>
             </ul>
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Skills</h2><Badge tone={boot?.codex.skill_present ? "ok" : "warn"}>{boot?.codex.skill_present ? "installed" : "missing"}</Badge></div>
+            <div className="section-title"><h2>مهارت‌ها</h2><Badge tone={boot?.codex.skill_present ? "ok" : "warn"}>{boot?.codex.skill_present ? "نصب‌شده" : "نصب نیست"}</Badge></div>
             <p className="muted tiny" style={{ marginTop: 0 }}>
-              ARIA installs an <span className="mono">imagegen</span> skill into the profile's skills folder. It teaches the agent to use the
-              built-in image tool and to avoid scripts or API keys.
+              برنامه مهارت <span className="mono">imagegen</span> را در پوشه مهارت‌های حساب نصب می‌کند تا عامل از موتور داخلی تصویرسازی استفاده کند، نه اسکریپت یا کلید API.
             </p>
-            <Button size="sm" icon="download" loading={installSkill.isPending} onClick={() => installSkill.mutate([])}>Install / repair skill</Button>
+            <Button size="sm" icon="download" loading={installSkill.isPending} onClick={() => installSkill.mutate([])}>نصب یا ترمیم مهارت</Button>
             <div className="mono-path" style={{ marginTop: 8 }}>{boot?.paths.codex_home}\skills</div>
           </Card>
 
           <Card>
-            <div className="section-title"><h2>Profile home</h2></div>
+            <div className="section-title"><h2>پوشه حساب</h2></div>
             <div className="row wrap">
-              <Button size="sm" icon="folder" onClick={() => { if (boot?.paths.codex_home) void api.openPath(boot.paths.codex_home).catch(() => undefined); }}>Open folder</Button>
-              <Button size="sm" variant="ghost" icon="terminal" onClick={() => useApp.getState().setRoute("engine")}>AI engine</Button>
+              <Button size="sm" icon="folder" onClick={() => { if (boot?.paths.codex_home) void api.openPath(boot.paths.codex_home).catch(() => undefined); }}>بازکردن پوشه</Button>
+              <Button size="sm" variant="ghost" icon="terminal" onClick={() => useApp.getState().setRoute("engine")}>موتور هوش مصنوعی</Button>
             </div>
             <div className="divider" style={{ margin: "10px 0" }} />
-            <div className="tiny muted">Structure</div>
+            <div className="tiny muted">ساختار</div>
             <CodeBlock text={`${boot?.paths.codex_home ?? "<CODEX_HOME>"}
   auth.json          session tokens (user-only ACL)
   auth.vault         DPAPI backup
@@ -125,17 +124,17 @@ export function CodexSettingsPage() {
         </div>
       </div>
 
-      <Modal open={confirmOpen} title="Write config.toml" subtitle="A backup is created first" onClose={() => setConfirmOpen(false)}
+      <Modal open={confirmOpen} title="ذخیره فایل config.toml" subtitle="ابتدا نسخه پشتیبان ساخته می‌شود" onClose={() => setConfirmOpen(false)}
         footer={<>
-          <Button variant="ghost" onClick={() => setConfirmOpen(false)}>Cancel</Button>
-          <Button variant="primary" icon="save" onClick={() => void save()}>Write file</Button>
+          <Button variant="ghost" onClick={() => setConfirmOpen(false)}>لغو</Button>
+          <Button variant="primary" icon="save" onClick={() => void save()}>ذخیره فایل</Button>
         </>}
       >
         <div className="stack">
           <div className="mono-path">{loadedPath}</div>
           <div className="log-view" style={{ maxHeight: 220 }}>{content.slice(0, 2000)}{content.length > 2000 ? "\n…" : ""}</div>
-          <div className="tiny dim">The change affects the active profile only. Existing sessions are not modified.</div>
-          {config.data?.exists ? <div className="tiny muted">Last read {formatDate(new Date().toISOString())}</div> : null}
+          <div className="tiny dim">این تغییر فقط برای حساب فعال است و نشست‌های قبلی را تغییر نمی‌دهد.</div>
+          {config.data?.exists ? <div className="tiny muted">آخرین خواندن {formatDate(new Date().toISOString())}</div> : null}
         </div>
       </Modal>
     </div>

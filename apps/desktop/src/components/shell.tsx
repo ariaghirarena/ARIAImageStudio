@@ -5,72 +5,72 @@ import { useApp, type Route } from "../store";
 
 export const NAV: { group: string; items: { route: Route; label: string; icon: IconName; badge?: string }[] }[] = [
   {
-    group: "Studio",
+    group: "استودیو",
     items: [
-      { route: "dashboard", label: "Dashboard", icon: "dashboard" },
-      { route: "create", label: "Create Image", icon: "sparkles" },
-      { route: "edit", label: "Edit Image", icon: "wand" },
-      { route: "variations", label: "Variations", icon: "layers" },
+      { route: "dashboard", label: "داشبورد", icon: "dashboard" },
+      { route: "create", label: "ساخت تصویر", icon: "sparkles" },
+      { route: "edit", label: "ویرایش تصویر", icon: "wand" },
+      { route: "variations", label: "تنوع‌ها", icon: "layers" },
     ],
   },
   {
-    group: "Library",
+    group: "کتابخانه",
     items: [
-      { route: "gallery", label: "Gallery", icon: "image" },
-      { route: "projects", label: "Projects", icon: "folder" },
-      { route: "prompt-studio", label: "Prompt Studio", icon: "zap" },
-      { route: "prompt-library", label: "Prompt Library", icon: "library" },
+      { route: "gallery", label: "گالری تصاویر", icon: "image" },
+      { route: "projects", label: "پروژه‌ها", icon: "folder" },
+      { route: "prompt-studio", label: "استودیو پرامپت", icon: "zap" },
+      { route: "prompt-library", label: "کتابخانه پرامپت", icon: "library" },
     ],
   },
   {
-    group: "Engine",
+    group: "موتور",
     items: [
-      { route: "engine", label: "AI Engine", icon: "cpu" },
-      { route: "models", label: "Model Settings", icon: "sliders" },
-      { route: "codex", label: "Codex Settings", icon: "terminal" },
-      { route: "auth", label: "Authentication", icon: "key" },
-      { route: "accounts", label: "Account Manager", icon: "user" },
+      { route: "engine", label: "موتور هوش مصنوعی", icon: "cpu" },
+      { route: "models", label: "تنظیمات مدل", icon: "sliders" },
+      { route: "codex", label: "تنظیمات Codex", icon: "terminal" },
+      { route: "auth", label: "ورود و احراز هویت", icon: "key" },
+      { route: "accounts", label: "مدیریت حساب‌ها", icon: "user" },
     ],
   },
   {
-    group: "Operations",
+    group: "عملیات",
     items: [
-      { route: "batch", label: "Batch Studio", icon: "grid" },
-      { route: "workflows", label: "Workflow Builder", icon: "workflow" },
-      { route: "history", label: "History", icon: "clock" },
-      { route: "analytics", label: "Analytics", icon: "chart" },
+      { route: "batch", label: "صف تولید گروهی", icon: "grid" },
+      { route: "workflows", label: "گردش‌کار", icon: "workflow" },
+      { route: "history", label: "تاریخچه", icon: "clock" },
+      { route: "analytics", label: "گزارش و آمار", icon: "chart" },
     ],
   },
   {
-    group: "System",
+    group: "سیستم",
     items: [
-      { route: "preferences", label: "Preferences", icon: "settings" },
-      { route: "diagnostics", label: "Diagnostics", icon: "activity" },
+      { route: "preferences", label: "تنظیمات برنامه", icon: "settings" },
+      { route: "diagnostics", label: "عیب‌یابی", icon: "activity" },
     ],
   },
 ];
 
 export const PAGE_TITLES: Record<Route, string> = {
-  welcome: "Welcome",
-  auth: "Authentication",
-  dashboard: "Dashboard",
-  create: "Create Image",
-  edit: "Edit Image",
-  variations: "Image Variations",
-  gallery: "Gallery",
-  "prompt-studio": "Prompt Studio",
-  "prompt-library": "Prompt Library",
-  batch: "Batch Studio",
-  workflows: "Workflow Builder",
-  projects: "Project Manager",
-  engine: "AI Engine",
-  models: "Model Settings",
-  codex: "Codex Settings",
-  accounts: "Account Manager",
-  history: "History",
-  analytics: "Analytics",
-  preferences: "Preferences",
-  diagnostics: "Diagnostics",
+  welcome: "شروع کار",
+  auth: "ورود و احراز هویت",
+  dashboard: "داشبورد",
+  create: "ساخت تصویر",
+  edit: "ویرایش تصویر",
+  variations: "تنوع تصویر",
+  gallery: "گالری تصاویر",
+  "prompt-studio": "استودیو پرامپت",
+  "prompt-library": "کتابخانه پرامپت",
+  batch: "صف تولید گروهی",
+  workflows: "گردش‌کار",
+  projects: "مدیریت پروژه‌ها",
+  engine: "موتور هوش مصنوعی",
+  models: "تنظیمات مدل",
+  codex: "تنظیمات Codex",
+  accounts: "مدیریت حساب‌ها",
+  history: "تاریخچه",
+  analytics: "گزارش و آمار",
+  preferences: "تنظیمات برنامه",
+  diagnostics: "عیب‌یابی",
 };
 
 export function Sidebar() {
@@ -80,19 +80,19 @@ export function Sidebar() {
   const toast = useApp((state) => state.toast);
 
   const engineLabel = useMemo(() => {
-    if (!boot) return { text: "Runtime offline", cls: "" };
-    if (!boot.codex.found) return { text: "Codex not found", cls: "" };
-    if (!boot.codex.auth_present) return { text: "No account", cls: "warn" };
-    return { text: boot.codex.version || "Codex ready", cls: "ok" };
+    if (!boot) return { text: "موتور در دسترس نیست", cls: "" };
+    if (!boot.codex.found) return { text: "Codex پیدا نشد", cls: "" };
+    if (!boot.codex.auth_present) return { text: "حسابی وصل نیست", cls: "warn" };
+    return { text: boot.codex.version || "Codex آماده است", cls: "ok" };
   }, [boot]);
 
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">A</div>
+        <div className="brand-mark">آ</div>
         <div className="brand-text">
-          <div className="brand-name">ARIA</div>
-          <div className="brand-sub">Image Studio</div>
+          <div className="brand-name">ARIA Image Studio</div>
+          <div className="brand-sub">استودیوی تصویر با Codex</div>
         </div>
       </div>
 
@@ -107,7 +107,7 @@ export function Sidebar() {
                 data-active={route === item.route ? "true" : "false"}
                 onClick={() => setRoute(item.route)}
               >
-                <Icon name={item.icon} size={15} />
+                <Icon name={item.icon} size={16} />
                 <span>{item.label}</span>
                 {item.route === "batch" && boot && boot.counts.pending_jobs > 0 ? (
                   <span className="nav-badge">{boot.counts.pending_jobs}</span>
@@ -119,15 +119,15 @@ export function Sidebar() {
       </div>
 
       <div className="sidebar-foot">
-        <button className="engine-chip" onClick={() => setRoute("engine")} title="Open AI Engine">
+        <button className="engine-chip" onClick={() => setRoute("engine")} title="بازکردن صفحه موتور">
           <span className={`engine-dot ${engineLabel.cls}`} />
           <span className="truncate">{engineLabel.text}</span>
           <span className="spacer" />
-          <Icon name="chevronRight" size={12} />
+          <Icon name="chevronLeft" size={12} />
         </button>
         <button className="nav-item" onClick={() => useApp.getState().setHelp(true)}>
           <Icon name="info" size={15} />
-          <span>Help & shortcuts</span>
+          <span>راهنما و کلیدهای میانبر</span>
           <span className="nav-badge kbd">?</span>
         </button>
         <button
@@ -136,12 +136,12 @@ export function Sidebar() {
             try {
               await api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio/releases");
             } catch {
-              toast("Could not open the releases page", "err");
+              toast("صفحه دانلود باز نشد", "err");
             }
           }}
         >
           <Icon name="refresh" size={15} />
-          <span>Updates</span>
+          <span>دریافت نسخه جدید</span>
           <span className="nav-badge">{boot?.version ?? ""}</span>
         </button>
       </div>
@@ -161,21 +161,21 @@ export function Topbar() {
     <header className="topbar">
       <div className="crumbs">
         <span>ARIA</span>
-        <Icon name="chevronRight" size={12} />
+        <Icon name="chevronLeft" size={12} />
         <strong>{PAGE_TITLES[route]}</strong>
       </div>
       <div className="spacer" />
       <button className="search-trigger" onClick={() => setPalette(true)}>
         <Icon name="search" size={13} />
-        <span>Search & commands</span>
+        <span>جستجو یا اجرای فرمان…</span>
         <span className="spacer" />
         <span className="kbd">Ctrl K</span>
       </button>
       <Badge tone={activeProfile ? "ok" : "warn"}>
         <Icon name="user" size={11} />
-        {activeProfile ? activeProfile.name : "No account"}
+        {activeProfile ? activeProfile.name : "بدون حساب"}
       </Badge>
-      {boot?.codex.found ? <Badge tone="info">Codex {boot.codex.version?.replace(/^codex-cli\s*/i, "")}</Badge> : <Badge tone="err">Codex missing</Badge>}
+      {boot?.codex.found ? <Badge tone="info">Codex {boot.codex.version?.replace(/^codex-cli\s*/i, "")}</Badge> : <Badge tone="err">Codex نصب نیست</Badge>}
     </header>
   );
 }
@@ -248,13 +248,13 @@ export function CommandPalette() {
       run: () => setRoute(item.route),
     })));
     const actions = [
-      { id: "act:diagnostics", label: "Run diagnostics", hint: "System", icon: "activity" as IconName, run: () => setRoute("diagnostics") },
-      { id: "act:skill", label: "Install imagegen skill", hint: "Engine", icon: "sparkles" as IconName, run: async () => {
-        try { await api.codexInstallSkill(); toast("Skill installed into the ARIA CODEX_HOME", "ok"); } catch (error) { toast(String((error as { message?: string })?.message ?? error), "err"); }
+      { id: "act:diagnostics", label: "اجرای عیب‌یابی کامل", hint: "سیستم", icon: "activity" as IconName, run: () => setRoute("diagnostics") },
+      { id: "act:skill", label: "نصب مهارت تصویرسازی (imagegen)", hint: "موتور", icon: "sparkles" as IconName, run: async () => {
+        try { await api.codexInstallSkill(); toast("مهارت تصویرسازی نصب شد", "ok"); } catch (error) { toast(String((error as { message?: string })?.message ?? error), "err"); }
       } },
-      { id: "act:releases", label: "Open GitHub releases", hint: "System", icon: "external" as IconName, run: () => { void api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio/releases").catch(() => undefined); } },
-      { id: "act:root", label: "Open ARIA data folder", hint: "System", icon: "folder" as IconName, run: () => { const root = useApp.getState().boot?.paths.root; if (root) void api.openPath(root).catch(() => undefined); } },
-      { id: "act:help", label: "Help & shortcuts", hint: "Help", icon: "info" as IconName, run: () => useApp.getState().setHelp(true) },
+      { id: "act:releases", label: "بازکردن صفحه دانلود نسخه‌ها", hint: "سیستم", icon: "external" as IconName, run: () => { void api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio/releases").catch(() => undefined); } },
+      { id: "act:root", label: "بازکردن پوشه داده‌های ARIA", hint: "سیستم", icon: "folder" as IconName, run: () => { const root = useApp.getState().boot?.paths.root; if (root) void api.openPath(root).catch(() => undefined); } },
+      { id: "act:help", label: "راهنما و کلیدهای میانبر", hint: "راهنما", icon: "info" as IconName, run: () => useApp.getState().setHelp(true) },
     ];
     return [...pages, ...actions];
   }, [setRoute, toast]);
@@ -276,10 +276,10 @@ export function CommandPalette() {
   if (!open) return null;
   return (
     <div className="palette-backdrop" onMouseDown={(event) => { if (event.target === event.currentTarget) setPalette(false); }}>
-      <div className="palette" role="dialog" aria-label="Command palette">
+      <div className="palette" role="dialog" aria-label="فرمان‌ها">
         <input
           ref={inputRef}
-          placeholder="Jump to a page or run a command…"
+          placeholder="به کدام صفحه بروم یا چه کاری انجام شود؟"
           value={query}
           onChange={(event) => { setQuery(event.target.value); setActive(0); }}
           onKeyDown={(event) => {
@@ -309,7 +309,7 @@ export function CommandPalette() {
               <small>{command.hint}</small>
             </button>
           ))}
-          {filtered.length === 0 ? <div className="muted small" style={{ padding: 14 }}>No matches.</div> : null}
+          {filtered.length === 0 ? <div className="muted small" style={{ padding: 14 }}>چیزی پیدا نشد.</div> : null}
         </div>
       </div>
     </div>
@@ -320,22 +320,22 @@ export function HelpDrawer() {
   const open = useApp((state) => state.helpOpen);
   const setHelp = useApp((state) => state.setHelp);
   const shortcuts = [
-    ["Ctrl / ⌘ + K", "Command palette"],
-    ["Ctrl / ⌘ + 1…5", "Fast navigation"],
-    ["Ctrl / ⌘ + Enter", "Generate with the current prompt"],
-    ["Ctrl / ⌘ + S", "Save the prompt to the library"],
-    ["Esc", "Close overlays"],
-    ["+ / − / wheel", "Zoom in the lightbox"],
+    ["Ctrl / ⌘ + K", "جستجو و فرمان‌ها"],
+    ["Ctrl / ⌘ + 1…5", "پرش سریع بین بخش‌ها"],
+    ["Ctrl / ⌘ + Enter", "تولید تصویر با پرامپت فعلی"],
+    ["Ctrl / ⌘ + S", "ذخیره پرامپت در کتابخانه"],
+    ["Esc", "بستن پنجره‌ها"],
+    ["+ / − / چرخ ماوس", "بزرگ‌نمایی تصویر"],
   ];
   return (
-    <Modal open={open} title="Help & shortcuts" subtitle="ARIA Image Studio 1.0" onClose={() => setHelp(false)}>
+    <Modal open={open} title="راهنما و کلیدهای میانبر" subtitle="ARIA Image Studio نسخه ۱.۰" onClose={() => setHelp(false)}>
       <div className="stack">
         <div>
-          <h3 style={{ fontSize: 13, marginBottom: 6 }}>How generation works</h3>
+          <h3 style={{ fontSize: 13, marginBottom: 6 }}>تصویر چطور ساخته می‌شود؟</h3>
           <p className="muted small" style={{ margin: 0 }}>
-            ARIA never calls an image API. It runs the official Codex CLI with an ARIA-owned CODEX_HOME and lets the
-            built-in <span className="mono">image_gen</span> tool create the image; the result is imported from
-            <span className="mono"> $CODEX_HOME/generated_images</span> into your project folder.
+            این برنامه هیچ API تصویری صدا نمی‌زند. ابزار رسمی Codex با پوشه اختصاصی ARIA اجرا می‌شود و ابزار داخلی
+            <span className="mono"> image_gen</span> تصویر را می‌سازد؛ فایل خروجی از مسیر
+            <span className="mono"> generated_images</span> داخل پوشه پروژه شما کپی و ثبت می‌شود.
           </p>
         </div>
         <table className="table">
@@ -349,10 +349,10 @@ export function HelpDrawer() {
           </tbody>
         </table>
         <div className="row wrap">
-          <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/openai/codex").catch(() => undefined)}>Codex repository</Button>
-          <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio").catch(() => undefined)}>Project repository</Button>
+          <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/openai/codex").catch(() => undefined)}>مخزن Codex</Button>
+          <Button size="sm" icon="external" onClick={() => void api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio").catch(() => undefined)}>مخزن برنامه</Button>
           <span className="spacer" />
-          <span className="dim tiny">No API key is ever required.</span>
+          <span className="dim tiny">هیچ‌وقت کلید API لازم نیست.</span>
         </div>
       </div>
     </Modal>
@@ -368,21 +368,21 @@ export function RuntimeGate({ children }: { children: React.ReactNode }) {
         <h1>ARIA Image Studio</h1>
         <p>
           {error === "no_desktop_runtime"
-            ? "You are viewing the interface without the desktop runtime. Install the Windows build (or run `npm run tauri dev`) to use Codex authentication, generation and local image processing."
+            ? "این نسخه فقط پیش‌نمایش رابط کاربری است. برای ورود به حساب Codex، ساخت تصویر و پردازش فایل‌ها، نسخه ویندوز را نصب کنید."
             : error}
         </p>
         <div className="row wrap" style={{ marginTop: 18 }}>
           <Button variant="primary" icon="download" onClick={() => void api.openUrl("https://github.com/ariaghirarena/ARIAImageStudio/releases").catch(() => undefined)}>
-            Download the installer
+            دانلود نصب‌کننده
           </Button>
-          <Button icon="sparkles" onClick={() => useApp.getState().setRoute("prompt-studio")}>Try Prompt Studio (works offline)</Button>
+          <Button icon="sparkles" onClick={() => useApp.getState().setRoute("prompt-studio")}>امتحان استودیو پرامپت (بدون نیاز به موتور)</Button>
         </div>
       </div>
       <div style={{ marginTop: 18 }}>
         <EmptyState
           icon="monitor"
-          title="Preview mode"
-          description="The design system, navigation and the deterministic prompt engine are fully live. Native features such as Codex generation, image processing and the gallery require the desktop runtime."
+          title="حالت پیش‌نمایش"
+          description="رابط کاربری، منوها و موتور پرامپت کامل کار می‌کنند. ساخت تصویر، پردازش تصویر و گالری به نسخه نصبی ویندوز نیاز دارند."
         />
       </div>
     </div>
@@ -393,7 +393,7 @@ export function LoadingScreen({ label }: { label: string }) {
   return (
     <div style={{ height: "100vh", display: "grid", placeItems: "center" }}>
       <div className="stack center" style={{ alignItems: "center", gap: 12 }}>
-        <div className="brand-mark" style={{ width: 46, height: 46, fontSize: 19 }}>A</div>
+        <div className="brand-mark" style={{ width: 46, height: 46, fontSize: 19 }}>آ</div>
         <Spinner label={label} />
       </div>
     </div>
@@ -428,13 +428,13 @@ export function PickerField({
       <span className="field-label">{label}</span>
       <div className="row">
         <Input value={value} placeholder={placeholder} onChange={(event) => onChange(event.target.value)} className="mono" />
-        <Button icon="folder" onClick={() => setOpen(true)}>{mode === "dir" ? "Browse" : "Pick"}</Button>
+        <Button icon="folder" onClick={() => setOpen(true)}>{mode === "dir" ? "انتخاب پوشه" : "انتخاب فایل"}</Button>
       </div>
       <FilePickerModal
         open={open}
         title={label}
         mode={mode}
-        roots={roots.length ? roots : [{ name: "Home", path: "" }]}
+        roots={roots.length ? roots : [{ name: "خانه", path: "" }]}
         onClose={() => setOpen(false)}
         onPick={(path) => onChange(path)}
         onConfirmDir={(path) => onChange(path)}

@@ -42,7 +42,7 @@ impl Default for Settings {
     fn default() -> Self {
         Self {
             language: "fa".into(),
-            theme: "obsidian".into(),
+            theme: "light".into(),
             locale_direction: "rtl".into(),
             output_root: String::new(),
             active_project_id: String::new(),
@@ -77,10 +77,14 @@ impl Default for Settings {
 
 impl Settings {
     pub fn load(paths: &AppPaths) -> Self {
-        std::fs::read_to_string(&paths.settings_file)
+        let mut settings: Self = std::fs::read_to_string(&paths.settings_file)
             .ok()
             .and_then(|raw| serde_json::from_str::<Settings>(&raw).ok())
-            .unwrap_or_default()
+            .unwrap_or_default();
+        settings.theme = "light".into();
+        settings.language = "fa".into();
+        settings.locale_direction = "rtl".into();
+        settings
     }
 
     pub fn save(&self, paths: &AppPaths) -> AppResult<()> {

@@ -74,3 +74,14 @@ Registry integrity: 300/300 rows, 0 duplicate ids. Full detail in [FEATURES-300.
 2. Tag `v1.0.0`, publish NSIS installer + portable EXE.
 3. Perform a signed-in manual pass across Create → Edit → Variations → Batch → Workflow, then upgrade the 23 Tested
    rows to cover the corresponding flows.
+
+## v1.1.0 — Persian light redesign
+
+- Persian presentation across all 20 pages, 300 Persian feature names (stable IDs and honest canonical statuses unchanged), RTL, bundled Peyda, conversational creation surface.
+- Legacy preferences migrate to Persian/RTL/light without deleting user data.
+- Central Windows child-process policy applies `CREATE_NO_WINDOW`; includes a Windows-only real-child console-handle regression test.
+- Local: TypeScript check, Vite production bundle and 16 Vitest assertions pass.
+- Windows installer build and console-handle test: pending CI for this revision.
+- Installed Windows tab-by-tab visual check and authenticated generation/edit remain unverified; no claim of end-to-end runtime verification.
+- Technical logs, model IDs, paths and engine prompt contents retain their original language.
+- See `docs/RELEASE-1.1.0.fa.md` for user instructions and font provenance/licensing caveat.

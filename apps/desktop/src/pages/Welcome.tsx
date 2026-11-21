@@ -14,40 +14,40 @@ export function WelcomePage() {
 
   const steps: Step[] = useMemo(() => [
     {
-      title: "Install the official Codex CLI",
+      title: "نصب ابزار رسمی Codex",
       body: boot?.codex.found
-        ? `Detected ${boot.codex.version || "Codex"} at ${boot.codex.path}`
-        : "ARIA drives the official Codex CLI; it is not bundled because it must be signed in by you.",
+        ? `${boot.codex.version || "Codex"} شناسایی شد`
+        : "برنامه از ابزار رسمی Codex استفاده می‌کند؛ آن را نصب کنید تا موتور تصویرسازی کار کند.",
       done: Boolean(boot?.codex.found),
       action: () => setRoute("engine"),
-      cta: boot?.codex.found ? "Review engine" : "Open engine guide",
+      cta: boot?.codex.found ? "مشاهده موتور" : "راهنمای نصب",
     },
     {
-      title: "Connect your Codex account",
+      title: "وصل‌کردن حساب Codex",
       body: boot?.codex.auth_present
-        ? "Credentials are present in the ARIA-owned CODEX_HOME."
-        : "Import auth.json or sign in with ChatGPT. ARIA never asks for an API key.",
+        ? "اطلاعات ورود شما در پوشه اختصاصی ARIA موجود است."
+        : "فایل auth.json را وارد کنید یا با ChatGPT وارد شوید. هیچ‌وقت کلید API لازم نیست.",
       done: Boolean(boot?.codex.auth_present) || (profiles.data?.length ?? 0) > 0,
       action: () => setRoute("auth"),
-      cta: "Open authentication",
+      cta: "بازکردن ورود",
     },
     {
-      title: "Create your first project",
+      title: "ساختن اولین پروژه",
       body: boot && boot.counts.projects > 0
-        ? `${boot.counts.projects} project(s) ready in ${boot.paths.projects}`
-        : "Projects keep prompts, references and outputs tidy per subject.",
+        ? `${boot.counts.projects} پروژه آماده است.`
+        : "پروژه‌ها پرامپت‌ها، عکس‌های مرجع و خروجی‌ها را برای هر موضوع جدا نگه می‌دارند.",
       done: Boolean(boot && boot.counts.projects > 0),
       action: () => setRoute("projects"),
-      cta: "Manage projects",
+      cta: "مدیریت پروژه‌ها",
     },
     {
-      title: "Generate and review",
+      title: "ساخت و بررسی تصویر",
       body: boot && boot.counts.images > 0
-        ? `${boot.counts.images} image(s) in your library.`
-        : "Describe the image, let Prompt Intelligence structure it, then generate with the built-in tool.",
+        ? `${boot.counts.images} تصویر در کتابخانه شما هست.`
+        : "توضیح تصویر را بنویسید، موتور پرامپت آن را مرتب می‌کند، بعد تصویر ساخته می‌شود.",
       done: Boolean(boot && boot.counts.images > 0),
       action: () => setRoute("create"),
-      cta: "Create an image",
+      cta: "ساخت تصویر",
     },
   ], [boot, profiles.data, setRoute]);
 
@@ -59,34 +59,34 @@ export function WelcomePage() {
         <div className="hero-grid">
           <div>
             <div className="row" style={{ gap: 8, marginBottom: 14 }}>
-              <Badge tone="accent">v{boot?.version ?? "1.0.0"}</Badge>
-              <Badge tone="info">Codex built-in image_gen</Badge>
-              <Badge>No API key</Badge>
+              <Badge tone="accent">نسخه {boot?.version ?? "1.1.0"}</Badge>
+              <Badge tone="info">موتور داخلی image_gen در Codex</Badge>
+              <Badge>بدون کلید API</Badge>
             </div>
-            <h1>Image creation, engineered<br />around your Codex account.</h1>
+            <h1>ساخت تصویر، ساده و فارسی<br />با حساب Codex شما</h1>
             <p style={{ fontSize: 15, marginTop: 12 }}>
-              ARIA Image Studio is a Windows studio for generating, editing, enhancing and organising images with the
-              built-in image generation engine of Codex. Every capability you see is wired to a real backend command —
-              what the engine cannot do is labelled, never faked.
+              ARIA Image Studio یک استودیوی ویندوزی برای ساخت، ویرایش و مرتب‌کردن تصاویر است که از موتور داخلی
+              تصویرسازی Codex استفاده می‌کند. هر کاری که در برنامه می‌بینید واقعاً به موتور وصل است؛ چیزی که موتور
+              نمی‌تواند، شفاف نوشته شده است.
             </p>
             <div className="row wrap" style={{ marginTop: 22 }}>
-              <Button variant="primary" size="lg" icon="sparkles" onClick={() => setRoute("create")}>Start creating</Button>
-              <Button size="lg" icon="key" onClick={() => setRoute("auth")}>Connect account</Button>
-              <Button size="lg" variant="ghost" icon="activity" onClick={() => setRoute("diagnostics")}>Run diagnostics</Button>
+              <Button variant="primary" size="lg" icon="sparkles" onClick={() => setRoute("create")}>شروع ساخت تصویر</Button>
+              <Button size="lg" icon="key" onClick={() => setRoute("auth")}>وصل‌کردن حساب</Button>
+              <Button size="lg" variant="ghost" icon="activity" onClick={() => setRoute("diagnostics")}>بررسی وضعیت سیستم</Button>
             </div>
           </div>
           <div className="stack">
             <Card tight>
               <div className="row between" style={{ marginBottom: 8 }}>
-                <span className="tiny muted" style={{ letterSpacing: ".12em", textTransform: "uppercase" }}>Environment</span>
+                <span className="tiny muted">وضعیت محیط</span>
                 <span className="mono tiny dim">{boot?.platform}</span>
               </div>
               <div className="list">
                 {[
-                  ["Codex CLI", boot?.codex.found ? (boot.codex.version || "installed") : "not found", Boolean(boot?.codex.found)],
-                  ["Credentials", boot?.codex.auth_present ? "present" : "missing", Boolean(boot?.codex.auth_present)],
-                  ["Image skill", boot?.codex.skill_present ? "installed" : "not installed", Boolean(boot?.codex.skill_present)],
-                  ["Database", `${boot?.counts.images ?? 0} images`, true],
+                  ["ابزار Codex", boot?.codex.found ? (boot.codex.version || "نصب است") : "پیدا نشد", Boolean(boot?.codex.found)],
+                  ["اطلاعات ورود", boot?.codex.auth_present ? "موجود است" : "وجود ندارد", Boolean(boot?.codex.auth_present)],
+                  ["مهارت تصویرسازی", boot?.codex.skill_present ? "نصب است" : "نصب نیست", Boolean(boot?.codex.skill_present)],
+                  ["کتابخانه تصاویر", `${boot?.counts.images ?? 0} تصویر`, true],
                 ].map(([label, value, ok]) => (
                   <div className="list-row" key={String(label)} style={{ padding: "8px 0" }}>
                     <span style={{ color: ok ? "var(--ok)" : "var(--warn)" }}><Icon name={ok ? "check" : "alert"} size={13} /></span>
@@ -98,10 +98,10 @@ export function WelcomePage() {
               </div>
             </Card>
             <Card tight>
-              <div className="tiny muted" style={{ letterSpacing: ".12em", textTransform: "uppercase", marginBottom: 8 }}>Onboarding</div>
+              <div className="tiny muted" style={{ marginBottom: 8 }}>پیشرفت راه‌اندازی</div>
               <div className="row between">
-                <span className="strong" style={{ fontSize: 20 }}>{doneCount}/4</span>
-                <span className="muted tiny">steps complete</span>
+                <span className="strong" style={{ fontSize: 20 }}>{doneCount}/۴</span>
+                <span className="muted tiny">مرحله انجام شده</span>
               </div>
               <div className="split-progress" style={{ marginTop: 10 }}>
                 <div style={{ width: `${(doneCount / 4) * 100}%` }} />
@@ -113,7 +113,7 @@ export function WelcomePage() {
 
       <div className="grid split" style={{ marginTop: 18 }}>
         <Card>
-          <div className="section-title"><h2>First-run checklist</h2><span>{doneCount} of 4 done</span></div>
+          <div className="section-title"><h2>چک‌لیست شروع</h2><span>{doneCount} از ۴ مرحله انجام شده</span></div>
           <div className="step-list">
             {steps.map((step, index) => (
               <div className="step" key={step.title} data-done={step.done ? "true" : "false"}>
@@ -129,22 +129,22 @@ export function WelcomePage() {
         </Card>
 
         <Card>
-          <div className="section-title"><h2>Where things live</h2></div>
+          <div className="section-title"><h2>فایل‌های برنامه کجا هستند؟</h2></div>
           <div className="stack" style={{ gap: 10 }}>
             <div>
-              <div className="tiny muted">ARIA data root</div>
+              <div className="tiny muted">پوشه داده‌های ARIA</div>
               <div className="mono-path">{boot?.paths.root ?? "—"}</div>
             </div>
             <div>
-              <div className="tiny muted">Dedicated CODEX_HOME</div>
+              <div className="tiny muted">پوشه اختصاصی Codex</div>
               <div className="mono-path">{boot?.paths.codex_home ?? "—"}</div>
             </div>
             <div>
-              <div className="tiny muted">Projects</div>
+              <div className="tiny muted">پوشه پروژه‌ها</div>
               <div className="mono-path">{boot?.paths.projects ?? "—"}</div>
             </div>
             <Button size="sm" icon="folder" onClick={() => { if (boot?.paths.root) void api.openPath(boot.paths.root).catch(() => undefined); }}>
-              Open data folder
+              بازکردن پوشه داده‌ها
             </Button>
           </div>
         </Card>
@@ -152,10 +152,10 @@ export function WelcomePage() {
 
       <div className="row wrap" style={{ marginTop: 18, justifyContent: "space-between" }}>
         <span className="dim tiny">
-          Credentials stay on this machine. ARIA never uploads auth.json, prompts or images to any ARIA server.
+          اطلاعات ورود شما فقط روی همین کامپیوتر می‌ماند و هیچ‌وقت به سروری ارسال نمی‌شود.
         </span>
         <Button variant="primary" icon="check" onClick={async () => { await saveSettings({ onboarded: true }); setRoute("dashboard"); }}>
-          Finish setup
+          تمام‌کردن راه‌اندازی
         </Button>
       </div>
     </div>

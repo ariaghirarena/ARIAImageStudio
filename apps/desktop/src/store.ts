@@ -39,7 +39,7 @@ interface AppStore {
 
 const fallbackSettings: Settings = {
   language: "fa",
-  theme: "obsidian",
+  theme: "light",
   locale_direction: "rtl",
   output_root: "",
   active_project_id: "",

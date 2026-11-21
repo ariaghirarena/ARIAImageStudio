@@ -1,3 +1,5 @@
+import { ERROR_MESSAGES_FA } from "./locale";
+export { faLabel } from "./locale";
 /**
  * @aria/core — typed bridge to the ARIA Image Studio Tauri backend.
  * Every call maps 1:1 to a registered Rust command; there is no mock data layer.
@@ -463,8 +465,8 @@ export function onEvent<T>(name: string, handler: (payload: T) => void): Promise
 // ---------------------------------------------------------------- formatting
 
 export function formatBytes(bytes: number): string {
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
-  const units = ["B", "KB", "MB", "GB", "TB"];
+  if (!Number.isFinite(bytes) || bytes <= 0) return "۰ بایت";
+  const units = ["بایت", "کیلوبایت", "مگابایت", "گیگابایت", "ترابایت"];
   const index = Math.min(units.length - 1, Math.floor(Math.log(bytes) / Math.log(1024)));
   const value = bytes / 1024 ** index;
   return `${value >= 100 || index === 0 ? Math.round(value) : value.toFixed(1)} ${units[index]}`;
@@ -472,16 +474,16 @@ export function formatBytes(bytes: number): string {
 
 export function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms <= 0) return "—";
-  if (ms < 1000) return `${Math.round(ms)} ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} s`;
-  return `${Math.floor(ms / 60_000)}m ${Math.round((ms % 60_000) / 1000)}s`;
+  if (ms < 1000) return `${Math.round(ms)} میلی‌ثانیه`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)} ثانیه`;
+  return `${Math.floor(ms / 60_000)} دقیقه و ${Math.round((ms % 60_000) / 1000)} ثانیه`;
 }
 
 export function formatDate(value: string | null | undefined): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+  return date.toLocaleString("fa-IR", { dateStyle: "medium", timeStyle: "short" });
 }
 
 export function toFileUrl(path: string): string {
@@ -514,5 +516,6 @@ export function cx(...values: (string | false | null | undefined)[]): string {
 
 export function errorText(error: unknown): string {
   const appError = toAppError(error);
+  if (ERROR_MESSAGES_FA[appError.code]) return ERROR_MESSAGES_FA[appError.code];
   return appError.hint ? `${appError.message} — ${appError.hint}` : appError.message;
 }

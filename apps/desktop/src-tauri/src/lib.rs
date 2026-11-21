@@ -15,6 +15,7 @@ mod queue;
 mod registry;
 mod security;
 mod settings;
+mod sysproc;
 mod updates;
 
 use error::{AppError, AppResult};
@@ -60,7 +61,7 @@ impl AppState {
 fn open_external(target: &str, is_url: bool) -> AppResult<()> {
     #[cfg(windows)]
     {
-        let mut cmd = std::process::Command::new("cmd");
+        let mut cmd = crate::sysproc::new("cmd");
         cmd.args(["/C", "start", ""]).arg(target);
         let _ = is_url;
         cmd.spawn()
@@ -69,7 +70,7 @@ fn open_external(target: &str, is_url: bool) -> AppResult<()> {
     #[cfg(not(windows))]
     {
         let _ = is_url;
-        std::process::Command::new("xdg-open")
+        crate::sysproc::new("xdg-open")
             .arg(target)
             .spawn()
             .map_err(|e| AppError::new("open_failed", format!("Could not open: {e}")))?;
@@ -274,9 +275,9 @@ fn auth_login_start(app: AppHandle, state: State<'_, AppState>, profile_id: Stri
             let _ = app_handle.emit("aria://login-line", json!({ "text": text }));
         };
         emit(if device {
-            "Starting device authentication with Codex…"
+            "در حال شروع ورود با کد دستگاه…"
         } else {
-            "Opening the official Codex browser login…"
+            "در حال بازکردن صفحه رسمی ورود Codex…"
         });
         if let Some(stdout) = stdout {
             for line in std::io::BufReader::new(stdout).lines().map_while(Result::ok) {
@@ -352,9 +353,9 @@ fn codex_models(state: State<'_, AppState>) -> AppResult<Value> {
         "models": models,
         "source": if models.is_empty() { "unavailable" } else { "codex models cache" },
         "detail": if models.is_empty() {
-            "This Codex installation has not published a model catalog to the ARIA CODEX_HOME. Leave the model empty to use the account default."
+            "این نصب Codex فهرست مدل محلی ندارد. برای استفاده از مدل پیش‌فرض حساب، قسمت مدل را خالی بگذارید."
         } else {
-            "Models reported by the installed Codex CLI."
+            "مدل‌های گزارش‌شده توسط ابزار Codex نصب‌شده."
         },
     }))
 }
