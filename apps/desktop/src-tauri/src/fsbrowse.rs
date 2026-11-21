@@ -40,10 +40,10 @@ pub fn roots() -> Value {
     let mut shortcuts = Vec::new();
     if let Some(home) = dirs::home_dir() {
         for (label, path) in [
-            ("Home", Some(home.clone())),
-            ("Desktop", Some(home.join("Desktop"))),
-            ("Downloads", Some(home.join("Downloads"))),
-            ("Documents", Some(home.join("Documents"))),
+            ("خانه", Some(home.clone())),
+            ("میز کار", Some(home.join("Desktop"))),
+            ("دریافت‌ها", Some(home.join("Downloads"))),
+            ("اسناد", Some(home.join("Documents"))),
         ] {
             if let Some(path) = path {
                 if path.is_dir() {
@@ -53,7 +53,7 @@ pub fn roots() -> Value {
         }
     }
     if let Some(local) = dirs::data_local_dir() {
-        shortcuts.push(json!({ "name": "AppData (Local)", "path": local.to_string_lossy() }));
+        shortcuts.push(json!({ "name": "داده‌های محلی برنامه‌ها", "path": local.to_string_lossy() }));
     }
     json!({ "roots": roots, "shortcuts": shortcuts })
 }

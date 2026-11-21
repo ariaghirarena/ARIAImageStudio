@@ -320,15 +320,15 @@ export function toAppError(error: unknown): AppError {
   if (typeof error === "string") {
     return { code: "error", message: error, hint: null };
   }
-  return { code: "unknown", message: "Unexpected error", hint: null };
+  return { code: "unknown", message: "خطای پیش‌بینی‌نشده؛ گزارش عیب‌یابی را بررسی کنید", hint: null };
 }
 
 async function call<T>(command: string, args?: Record<string, unknown>): Promise<T> {
   if (!isDesktopRuntime()) {
     throw {
       code: "no_desktop_runtime",
-      message: "This action needs the ARIA Image Studio desktop runtime.",
-      hint: "Open the installed Windows app (or run `npm run tauri dev`) to use native features.",
+      message: "این کار فقط در نسخه نصب‌شده برنامه قابل انجام است",
+      hint: "نسخه ویندوز را باز کنید؛ مرورگر به فایل‌ها و موتور دسکتاپ دسترسی ندارد",
     } satisfies AppError;
   }
   return invoke<T>(command, args);
