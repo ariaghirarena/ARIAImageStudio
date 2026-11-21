@@ -120,4 +120,6 @@ Release: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.2
 - Save the most recent 200 conversation messages, draft, references and generation options in local WebView storage. On restart, pending messages become interrupted (not falsely still running). This is UI conversation persistence, not automatic semantic conversation context sent to Codex.
 - Add confirmed clear-chat action (does not delete saved images).
 - Direct generations now carry a frontend-generated unique job ID. Cancel uses the same backend cancellation flag and existing Windows process-tree termination. UI waits for completion before enabling another request; late finished images remain in gallery.
-- Local: typecheck, production build and 40 tests pass. New Windows Rust regression exercises cancellation of a real long-running process. Tag CI pending. Installed manual generation/cancel remains unverified.
+- Local: typecheck, production build and 40 tests pass. New Windows Rust regression exercises cancellation of a real long-running process. Tag CI `44913277252` passed at `f58bc21`: all 40 JS tests, Rust live-process cancellation regression, other Windows regressions, installer bundle and release publication. Installed manual generation/cancel remains unverified.
+
+Published v1.1.3: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.3 — setup 2,511,687 bytes; portable 6,021,632 bytes.
