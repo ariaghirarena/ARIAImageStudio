@@ -105,3 +105,11 @@ Tag pipeline: https://github.com/ariaghirarena/ARIAImageStudio/actions/runs/4490
 - Frontend typecheck, production build and 36 JS tests passed locally. Installed Windows interactive picker and authenticated image editing remain unverified.
 
 Published v1.1.1: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.1 — NSIS 2,510,376 bytes; portable 6,019,584 bytes. Full tag CI succeeded, including 36 JS tests and Rust import/source-preservation and hidden-console tests.
+
+## v1.1.2 — Windows Codex launch path fix
+
+User-reported failure: cmd truncated the executable path at a space in the Windows user folder (`'C:\Users\PARDAZESH' is not recognized`). Removed manual `cmd /C` wrapping. Official npm installs now run the package's `bin/codex.js` through Node with a native argument vector; custom batch launchers use Rust's Windows batch quoting. Quoted manual executable settings are accepted. Exit code messages no longer display Rust's `Some(1)` debug representation.
+
+Verified: 36 JavaScript tests, frontend build, Windows cargo check, Rust tests including npm-prefix paths with spaces, literal multiline Persian prompts with quotes/metacharacters, custom batch path with spaces, hidden-console and personal-image import regressions. Full tag pipeline `44911158790` succeeded at `9e760a0`; release `v1.1.2` published. This verifies process launching with fixtures, not generation under the user's real account.
+
+Release: https://github.com/ariaghirarena/ARIAImageStudio/releases/tag/v1.1.2
