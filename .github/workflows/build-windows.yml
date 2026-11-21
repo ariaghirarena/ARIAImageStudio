@@ -60,10 +60,18 @@ jobs:
       - name: Cargo check
         shell: bash
         working-directory: apps/desktop/src-tauri
+        env:
+          PYTHONUTF8: "1"
+          PYTHONIOENCODING: "utf-8"
+          CARGO_TERM_COLOR: never
         run: |
-          set -o pipefail
-          export CARGO_TERM_COLOR=never
-          cargo check --message-format=short 2>&1 | tee cargo-check.log | python "$GITHUB_WORKSPACE/scripts/annotate-cargo.py"
+          cargo check --message-format=short > cargo-check.log 2>&1
+          status=$?
+          python "$GITHUB_WORKSPACE/scripts/annotate-cargo.py" < cargo-check.log
+          if [ "$status" -ne 0 ] && [ ! -s cargo-check.log ]; then
+            echo "::error::cargo exited $status with an empty log"
+          fi
+          exit $status
 
       - name: Build Tauri bundle (NSIS)
         run: npm run tauri build -- --bundles nsis

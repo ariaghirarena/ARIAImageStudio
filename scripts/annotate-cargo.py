@@ -8,6 +8,13 @@ import os
 import re
 import sys
 
+for stream in (sys.stdout, sys.stderr):
+    if hasattr(stream, "reconfigure"):
+        try:
+            stream.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ANSI = re.compile(r"\x1b\[[0-9;]*[A-Za-z]")
 SHORT = re.compile(r"^(?P<file>[^:]+?):(?P<line>\d+):(?P<col>\d+): error(?:\[(?P<code>[^\]]+)\])?: (?P<msg>.*)$")
