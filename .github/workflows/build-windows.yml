@@ -45,7 +45,7 @@ jobs:
         shell: bash
         run: |
           npm run features
-          git diff --exit-code -- FEATURES-300.md
+          git diff --exit-code --ignore-cr-at-eol -- FEATURES-300.md
 
       - name: Set up Rust (MSVC)
         uses: dtolnay/rust-toolchain@stable
